@@ -10,15 +10,15 @@
 
 ## Pitfall 1: [The Network Is Reliable] — ditulis oleh [Yustinus Yendy]
 
-**Bukti di skenario:** [network is always reliable, no need for retry]
+### **Bukti di skenario:** network is always reliable, no need for retry
 
-**Kenapa ini keliru:** [
+### **Kenapa ini keliru:** 
     FoodGo menganggap komunikasi antar service selalu berhasil, sehingga sistem tidak menyediakan mekanisme retry. Dan juga komunikasi jaringan dapat mengalami kegagalan/gangguan sehingga request tidak konsisten mendapatkan respons
-]
 
-**Dampak ke FoodGo:** [
+
+### **Dampak ke FoodGo:** 
     ketika komunikasi tidak reliable dan tidak ada sistem yang memperbaiki problem itu, maka satu kegagalan komunikasi itu bisa mempengaruhi keberlanjutan alur sistem
-]
+
 
 **Solusi desain awal:** 
 ###    1. Tambahkan mekanisme retry
@@ -30,7 +30,8 @@
         kalau request pembayaran berhasil, tapi response hilang karena gangguan jaringan, retry bisa menyebabkan pembayaran dilakukan kembali.
         maka request pembayaran perlu ID transaksi yang dimana sistem dapat mengenali request yang sama
 
-**Trade-off:** [retry mungkin merupakan solusi untuk menghadapi kegagalan jaringan sementara, tetapi retry yang terlalu sering juga bisa meningkatkan beban service yang bermasalah. Kemudian retry ada operasi pembayaran dapat menyebabkan duplikasi proses apabila sistem tidak memiliki mekanisme  utnuk mengenali request yang sama  ]
+### **Trade-off:** 
+retry mungkin merupakan solusi untuk menghadapi kegagalan jaringan sementara, tetapi retry yang terlalu sering juga bisa meningkatkan beban service yang bermasalah. Kemudian retry ada operasi pembayaran dapat menyebabkan duplikasi proses apabila sistem tidak memiliki mekanisme  utnuk mengenali request yang sama  
 
 ---
 
