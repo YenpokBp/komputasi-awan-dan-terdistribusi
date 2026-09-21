@@ -22,11 +22,16 @@
 
 **Solusi desain awal:** 
 ###    1. Tambahkan mekanisme retry
+
         kalau request gagal karena gangguan jaringan sementara, sistem masih dapat mencoba mengirim request.
         tapi retry tidak disarankan dilakukan terus menerus. Harus diberikan batas jumlah percobaan dan jeda antar percobaan
+
 ###    2. Gunakan backoff
+
         tujuannya ketika payment service bermasalah, seluruh request tidak langsung mengirim bersamaan.
+
 ###    3. Pertimbangkan idempoteny untuk operasi pembayaran
+
         kalau request pembayaran berhasil, tapi response hilang karena gangguan jaringan, retry bisa menyebabkan pembayaran dilakukan kembali.
         maka request pembayaran perlu ID transaksi yang dimana sistem dapat mengenali request yang sama
 
