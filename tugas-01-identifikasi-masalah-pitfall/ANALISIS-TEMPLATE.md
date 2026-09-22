@@ -2,48 +2,66 @@
 
 **Kelompok:** [yencefran]
 
-| Nama | NIM | Kontribusi |
-|---|---|---|
+| Nama                  | NIM            | Kontribusi                       |
+| --------------------- | -------------- | -------------------------------- |
 | [Grace Roswita Sallu] | [103072400093] | [pitfall/bagian yang dikerjakan] |
-| [Yustinus Yendy S.A] | [103072400065] | [Pitfall 1] |
-| [Efran Gustine Y] | [103072400046] | [pitfall/bagian yang dikerjakan] |
+| [Yustinus Yendy S.A]  | [103072400065] | [Pitfall 1]                      |
+| [Efran Gustine Y]     | [103072400046] | [pitfall/bagian yang dikerjakan] |
 
 ## Pitfall 1: [The Network Is Reliable] — ditulis oleh [Yustinus Yendy]
 
 ### **Bukti di skenario:** network is always reliable, no need for retry
 
-### **Kenapa ini keliru:** 
+### **Kenapa ini keliru:**
+
     FoodGo menganggap komunikasi antar service selalu berhasil, sehingga sistem tidak menyediakan mekanisme retry. Dan juga komunikasi jaringan dapat mengalami kegagalan/gangguan sehingga request tidak konsisten mendapatkan respons
 
+### **Dampak ke FoodGo:**
 
-### **Dampak ke FoodGo:** 
     ketika komunikasi tidak reliable dan tidak ada sistem yang memperbaiki problem itu, maka satu kegagalan komunikasi itu bisa mempengaruhi keberlanjutan alur sistem
 
+**Solusi desain awal:**
 
-**Solusi desain awal:** 
-###    1. Tambahkan mekanisme retry
+### 1. Tambahkan mekanisme retry
 
         kalau request gagal karena gangguan jaringan sementara, sistem masih dapat mencoba mengirim request.
         tapi retry tidak disarankan dilakukan terus menerus. Harus diberikan batas jumlah percobaan dan jeda antar percobaan
 
-###    2. Gunakan backoff
+### 2. Gunakan backoff
 
         tujuannya ketika payment service bermasalah, seluruh request tidak langsung mengirim bersamaan.
 
-###    3. Pertimbangkan idempoteny untuk operasi pembayaran
+### 3. Pertimbangkan idempoteny untuk operasi pembayaran
 
         kalau request pembayaran berhasil, tapi response hilang karena gangguan jaringan, retry bisa menyebabkan pembayaran dilakukan kembali.
         maka request pembayaran perlu ID transaksi yang dimana sistem dapat mengenali request yang sama
 
-### **Trade-off:** 
-retry mungkin merupakan solusi untuk menghadapi kegagalan jaringan sementara, tetapi retry yang terlalu sering juga bisa meningkatkan beban service yang bermasalah. Kemudian retry ada operasi pembayaran dapat menyebabkan duplikasi proses apabila sistem tidak memiliki mekanisme  utnuk mengenali request yang sama  
+### **Trade-off:**
+
+retry mungkin merupakan solusi untuk menghadapi kegagalan jaringan sementara, tetapi retry yang terlalu sering juga bisa meningkatkan beban service yang bermasalah. Kemudian retry ada operasi pembayaran dapat menyebabkan duplikasi proses apabila sistem tidak memiliki mekanisme utnuk mengenali request yang sama
 
 ---
 
-## Pitfall 2: [nama pitfall] — ditulis oleh [nama]
+## Pitfall 2: [Latency Is Zero] — ditulis oleh [Grace Roswita Sallu]
 
-(ulangi struktur di atas)
+### **Bukti di skenario:** 
+        Pada skenario FoodGo, di modul pesanan memanggil modul pembayaran dan menunggu respons tanpa batas waktu. Sehingga membuat sistem menganggap komunikasi antar modul pesanan dan modul pembayaran akan mendapatkan respons dalam beberapa waktu 
 
+### **Kenapa ini keliru:**
+      FoodGo menganggap komunikasi antar request dan response bisa terjadi hampir tanpa jeda. Padahal seharusnya setiap request perlu waktu untuk dikirim, diproses oleh service tujuan, lalu response dikirim kembali.
+
+### **Dampak ke FoodGo:**
+        Ketika payment memberikan respons dengan lambat, maka order akan terus menunggu karena tidak memiliki timeout. Lalu jika kondisi ini terjadi saat banyak pesanan bersamaan, maka semakin banyak request yang ikut nunggu respons dari payment. Sehingga code yang digunakan aplikasi bisa ikut tertahan dan waktu untuk respons pengguna jadi semakin lama 
+
+**Solusi desain awal:**
+### 1. Memberikan timout pada komunikasi antara order dan payment
+       Sehingga order tidak akan menunggu respons selamanya. Jika dalam waktu tertentu respons belum diterima, sistem dapat menghentikan proses tersebut dan menangani kondisi gagal. seperti menandai transaksi sebagain pending
+
+### 2. Circuit breaker   
+        Membantu mencegah order terus mengirim request ke payment ketika service tersebut sedang bermasalah atau terlalu lambat
+
+### **Trade-off:**
+        Menggunakan timeout mungkin dapat mencegah menunggu terlalu lama, tapi menentukan nilai timeout juga tidak bisa sembarangan. Jadi jika waktunya terlalu pendek, FoodGo bisa menganggap pembayaran gagal padahal payment sebenernya masih memproses transaksi tersebut. Sehingga ini dapat menimbulkan masalah lain, seperti status pembayaran sudah berhasil tapi status pesanan belum berubah, atau sistem melakukan percobaan ulang yang sebenarnya tidak perlu. Jadi penggunaan timeout perlu dibarengi dengan penangan status transaksi yang baik agar tidak menimbulkan transaksi ganda 
 ---
 
 ## Pitfall 3: [nama pitfall] — ditulis oleh [nama]

@@ -8,7 +8,8 @@
 - Perbedaan pendapat (jika ada): ...
 
 ## [Selasa, 22 September 2026]
-- ...
+- Peserta: [Grace Roswita, Efran Gustine, Yustinus Yendy]
+- Poin diskusi:
 
 ## Review Silang
 - [Nama] mengomentari analisis [Nama lain]: ...
