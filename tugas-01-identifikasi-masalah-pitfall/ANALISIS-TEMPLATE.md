@@ -6,7 +6,7 @@
 | --------------------- | -------------- | -------------------------------- |
 | [Grace Roswita Sallu] | [103072400093] | [pitfall/bagian yang dikerjakan] |
 | [Yustinus Yendy S.A]  | [103072400065] | [Pitfall 1]                      |
-| [Efran Gustine Y]     | [103072400046] | [pitfall/bagian yang dikerjakan] |
+| [Efran Gustine Y]     | [103072400046] | [pitfall 3] |
 
 ## Pitfall 1: [The Network Is Reliable] — ditulis oleh [Yustinus Yendy]
 
