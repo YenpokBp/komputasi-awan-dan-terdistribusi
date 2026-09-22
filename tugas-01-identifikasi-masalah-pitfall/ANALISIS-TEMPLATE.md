@@ -4,7 +4,7 @@
 
 | Nama                  | NIM            | Kontribusi                       |
 | --------------------- | -------------- | -------------------------------- |
-| [Grace Roswita Sallu] | [103072400093] | [pitfall/bagian yang dikerjakan] |
+| [Grace Roswita Sallu] | [103072400093] | [Pitfall 2] |
 | [Yustinus Yendy S.A]  | [103072400065] | [Pitfall 1]                      |
 | [Efran Gustine Y]     | [103072400046] | [pitfall 3] |
 
@@ -95,4 +95,4 @@ retry mungkin merupakan solusi untuk menghadapi kegagalan jaringan sementara, te
 
 ## Kesimpulan Kelompok
 
-[Ringkasan: jika FoodGo memperbaiki ketiga pitfall ini, apa arsitektur yang disarankan secara garis besar? Kaitkan dengan Tugas 2.]
+[Berdasarkan ketiga pitfall yang telah kami diskusikan, FoodGo perlu memperbaiki arsitekturnya agar jaringan tidak selalu reliable, komunikasi service terlalu cepat, dan modul bergantung pada satu server. Komunikas antar service juga perlu dilengkapi seperti mekanisme retry dengan backoff, timeout, dan circuit breaker sehingga gangguan jaringan atau keterlambatan respons bisa ditangani. Selain itu, service dapat dijalankan dalam beberapa instance agar beban dapat dibagi dan kegagalan satu instance tidak langsung menghentikan seluruh sistem]
