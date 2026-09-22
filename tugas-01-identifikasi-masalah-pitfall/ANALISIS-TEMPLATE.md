@@ -64,8 +64,6 @@ retry mungkin merupakan solusi untuk menghadapi kegagalan jaringan sementara, te
         Menggunakan timeout mungkin dapat mencegah menunggu terlalu lama, tapi menentukan nilai timeout juga tidak bisa sembarangan. Jadi jika waktunya terlalu pendek, FoodGo bisa menganggap pembayaran gagal padahal payment sebenernya masih memproses transaksi tersebut. Sehingga ini dapat menimbulkan masalah lain, seperti status pembayaran sudah berhasil tapi status pesanan belum berubah, atau sistem melakukan percobaan ulang yang sebenarnya tidak perlu. Jadi penggunaan timeout perlu dibarengi dengan penangan status transaksi yang baik agar tidak menimbulkan transaksi ganda 
 ---
 
-## Pitfall 3: [nama pitfall] — ditulis oleh [nama]
-
 ## Pitfall 3: [Single Point of Failure pada Arsitektur Monolitik] — ditulis oleh [Efran Gustine Y]
 
 ### **Bukti di skenario:**
