@@ -66,7 +66,32 @@ retry mungkin merupakan solusi untuk menghadapi kegagalan jaringan sementara, te
 
 ## Pitfall 3: [nama pitfall] — ditulis oleh [nama]
 
-(ulangi struktur di atas)
+## Pitfall 3: [Single Point of Failure pada Arsitektur Monolitik] — ditulis oleh [Efran Gustine Y]
+
+### **Bukti di skenario:**
+
+    Pada skenario FoodGo, semua modul seperti pesanan, pembayaran, dan notifikasi kurir berjalan pada satu server dan satu proses monolitik. Ketika server mengalami masalah atau crash, seluruh bagian aplikasi ikut terdampak dan server harus di-restart secara manual.
+
+### **Kenapa ini keliru:**
+
+    FoodGo menganggap semua modul dapat dijalankan dalam satu server tanpa menimbulkan masalah ketika jumlah pengguna meningkat. Padahal jika semua modul berada pada server dan proses yang sama, maka server tersebut menjadi satu titik kegagalan. Jika server mengalami overload atau crash, modul pesanan, pembayaran, dan notifikasi juga bisa ikut terganggu.
+
+### **Dampak ke FoodGo:**
+
+    Ketika terjadi peningkatan jumlah pesanan, semua modul harus menggunakan resource dari server yang sama. Jika beban semakin tinggi, resource server dapat habis dan membuat aplikasi menjadi lambat atau bahkan crash. Karena semua modul berada pada server yang sama, ketika server mengalami crash maka proses pesanan, pembayaran, dan notifikasi kurir dapat ikut berhenti. Sehingga sistem juga akan sulit menangani lonjakan traffic karena semua proses bergantung pada satu server.
+
+**Solusi desain awal:**
+### 1. Memisahkan modul menjadi beberapa service
+
+    Modul pesanan, pembayaran, dan notifikasi dapat dipisahkan menjadi service yang berbeda sehingga tidak semuanya bergantung pada satu proses yang sama. Dengan begitu, setiap service dapat menangani tugasnya masing-masing.
+
+### 2. Menambahkan lebih dari satu instance
+
+    Service yang sering menerima banyak request dapat dijalankan dalam beberapa instance. Jika salah satu instance mengalami masalah, request masih dapat diarahkan ke instance lainnya sehingga tidak langsung membuat seluruh sistem berhenti.
+
+### **Trade-off:**
+
+    Memisahkan service dapat mengurangi ketergantungan pada satu server, tetapi membuat sistem menjadi lebih kompleks. Setiap service harus berkomunikasi melalui jaringan sehingga FoodGo juga perlu menangani masalah seperti latency, kegagalan komunikasi, dan monitoring dari beberapa service. Selain itu, menjalankan beberapa instance juga membutuhkan resource yang lebih banyak dibandingkan hanya menggunakan satu server.
 
 ---
 
