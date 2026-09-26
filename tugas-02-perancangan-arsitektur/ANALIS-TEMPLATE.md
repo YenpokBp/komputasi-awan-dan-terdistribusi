@@ -25,44 +25,35 @@
 
 ## **Alur Skenario End-to-End:**
 
-### **Skenario**
-
-    Pelanggan membuat pesanan di FoodGo lalu melakukan pembayaran. Setelah
-    pembayaran berhasil, informasi pesanan dikirim melalui Message Broker
-    sehingga Resto dan Kurir dapat menerima informasi tersebut.
-
 ### **1. Pelanggan membuat pesanan**
 
-    Pelanggan mengirimkan pesanan ke Service Pesanan. Komunikasi pada tahap
-    ini dilakukan secara sinkron karena pelanggan mengirimkan request dan
-    Service Pesanan memberikan response.
+    Pelanggan membuat pesanan melalui Service Pesanan. Komunikasi dilakukan
+    secara sinkron karena pelanggan mengirimkan request dan menerima response
+    dari Service Pesanan.
 
-### **2. Pesanan melakukan pembayaran**
+### **2. Melakukan pembayaran**
 
-    Setelah pesanan diterima, Service Pesanan mengirimkan RequestPayment kepada
+    Setelah pesanan dibuat, Service Pesanan mengirimkan RequestPayment kepada
     Service Pembayaran. Komunikasi dilakukan secara sinkron dengan pola
-    request-response. Service Pesanan menunggu hasil pembayaran sebelum
-    melanjutkan ke proses berikutnya.
+    request-response.
 
 ### **3. Pembayaran berhasil**
 
-    Jika pembayaran berhasil, Service Pembayaran membuat event PaymentCompleted.
-    Event tersebut dikirimkan ke Message Broker. Komunikasi pada tahap ini
-    bersifat asinkron karena Service Pembayaran tidak berkomunikasi langsung
-    dengan Resto dan Kurir.
+    Jika pembayaran berhasil, Service Pembayaran mengirimkan event
+    PaymentCompleted ke Message Broker. Komunikasi pada tahap ini dilakukan
+    secara asinkron.
 
-### **4. Resto menerima informasi pesanan**
+### **4. Resto menerima informasi**
 
     Message Broker meneruskan event PaymentCompleted kepada Service Katalog
-    Resto sebagai subscriber. Setelah menerima event tersebut, Resto mengetahui
-    bahwa pembayaran telah berhasil dan dapat melanjutkan proses pesanan.
+    Resto. Resto menerima informasi bahwa pembayaran telah berhasil dan dapat
+    memproses pesanan.
 
 ### **5. Kurir menerima informasi**
 
-    Service Kurir juga menerima event PaymentCompleted dari Message Broker.
-    Setelah mendapatkan informasi bahwa pembayaran telah berhasil, Kurir dapat
-    melanjutkan proses penugasan untuk pesanan tersebut.
-
+    Message Broker juga meneruskan event PaymentCompleted kepada Service Kurir.
+    Setelah menerima informasi tersebut, Kurir dapat melanjutkan proses
+    penugasan untuk pesanan.
 ### Jenis Komunikasi
 
 | Komponen | Komunikasi | Jenis |
