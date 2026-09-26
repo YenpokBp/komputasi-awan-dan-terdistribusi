@@ -19,32 +19,16 @@ Tidak perlu software berbayar. Dua opsi:
 
 **Opsi A — Mermaid di dalam Markdown (disarankan).** Ditulis sebagai teks biasa di `README.md`, otomatis dirender jadi diagram oleh GitHub — tidak perlu install apa pun.
 
+````markdown
 ```mermaid
-flowchart LR
-    Customer[Pelanggan]
-
-    Order[Service Pesanan]
-    Payment[Service Pembayaran]
-    Resto[Service Katalog / Resto]
-    Courier[Service Kurir / Notifikasi]
-    Broker[(Message Broker)]
-
-    Customer -->|HTTP Request| Order
-
-    Order -->|Request Pembayaran| Payment
-    Payment -->|Payment Response| Order
-
-    Order -->|Publish: OrderCreated| Broker
-
-    Broker -->|Subscribe| Resto
-    Broker -->|Subscribe| Courier
-
-    Payment -->|Publish: PaymentCompleted| Broker
-    Broker -->|Subscribe| Order
-
-    Resto -->|Publish: OrderReady| Broker
-    Broker -->|Subscribe| Courier
+graph LR
+  Client[Pelanggan] -->|HTTP request pesan| OrderSvc[Service Pesanan]
+  OrderSvc -->|RPC sinkron| PaymentSvc[Service Pembayaran]
+  OrderSvc -->|publish event OrderCreated| Broker[(Message Broker)]
+  Broker -->|subscribe| NotifSvc[Service Notifikasi Kurir]
+  Broker -->|subscribe| RestoSvc[Service Katalog Resto]
 ```
+````
 
 **Opsi B — draw.io / diagrams.net** (gratis, jalan di browser tanpa akun, atau app desktop offline di [app.diagrams.net](https://app.diagrams.net/)). Ekspor sebagai `.png` dan simpan di folder `diagram/`.
 
