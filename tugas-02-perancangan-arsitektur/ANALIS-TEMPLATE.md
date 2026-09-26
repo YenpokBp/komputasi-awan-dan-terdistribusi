@@ -8,8 +8,10 @@
 | [Efran Gustine Y]     | [103072400046] | [Menjelaskan alur skenario, analisis trade-off] |
 
 ### **Bukti di Skenario:**
-    Pada desain lama (![desain lama](arsitekturLama.jpeg)) pesanan terhubung secara langsung dengan resto, pembayaran, dan kurir. Sehingga setiap modul harus berkomunikasi secara langsung untuk menjalankan proses pemesanan, pembayaran, dan pengantaran
+### **Perancangan Arsitektur:**
 
+### **Perancangan Message Broker:**
+### **Perancangan Diagram:**
 ### **Kenapa arsitektur pertama keliru:**
     Karena arsitektur itu membuat setiap layanan memiliki ketergantungan langsung satu sama lain. Di mana jika terdapat perubahan atau terjadi masalah di salah satu service saja, komunikasi dengan service lain juga akan ikut terdampak. Selain itu, semakin banyak layanan yang ditambahkan akan semakin banyak juga hubungan langsung yang harus dikelola
 
@@ -28,32 +30,33 @@
 
 ### 1. Pelanggan membuat pesanan
 
-    Pelanggan membuat pesanan lewat Service Pesanan. Di bagian ini prosesnya
-    masih sinkron, karena pelanggan mengirim request lalu mendapatkan response
+    Pelanggan membuat pesanan melalui Service Pesanan. Komunikasi dilakukan
+    secara sinkron karena pelanggan mengirimkan request dan menerima response
     dari Service Pesanan.
 
 ### 2. Melakukan pembayaran
 
-    Setelah pesanan dibuat, Service Pesanan mengirim RequestPayment ke Service
-    Pembayaran. Service Pesanan akan menunggu hasil pembayaran sebelum lanjut
-    ke proses berikutnya.
+    Setelah pesanan dibuat, Service Pesanan mengirimkan RequestPayment kepada
+    Service Pembayaran. Komunikasi dilakukan secara sinkron dengan pola
+    request-response.
 
 ### 3. Pembayaran berhasil
 
-    Kalau pembayaran berhasil, Service Pembayaran mengirim event
-    PaymentCompleted ke Message Broker. Setelah itu, Message Broker akan
-    mengirimkan informasi tersebut ke service yang membutuhkan.
+    Jika pembayaran berhasil, Service Pembayaran mengirimkan event
+    PaymentCompleted ke Message Broker. Komunikasi pada tahap ini dilakukan
+    secara asinkron.
 
 ### 4. Resto menerima informasi
 
-    Service Katalog Resto menerima informasi PaymentCompleted dari Message
-    Broker. Setelah pembayaran berhasil, Resto bisa mulai memproses pesanan.
+    Message Broker meneruskan event PaymentCompleted kepada Service Katalog
+    Resto. Resto menerima informasi bahwa pembayaran telah berhasil dan dapat
+    memproses pesanan.
 
 ### 5. Kurir menerima informasi
 
-    Service Kurir juga menerima informasi dari Message Broker. Setelah tahu
-    pembayaran sudah berhasil, Kurir bisa mulai mencari atau menentukan kurir
-    untuk pesanan tersebut.
+    Message Broker juga meneruskan event PaymentCompleted kepada Service Kurir.
+    Setelah menerima informasi tersebut, Kurir dapat melanjutkan proses
+    penugasan untuk pesanan.
 ### Jenis Komunikasi
 
 | Komponen | Komunikasi | Jenis |
@@ -64,34 +67,47 @@
 | Message Broker dan Service Katalog Resto | PaymentCompleted | Asinkron / Event |
 | Message Broker dan Service Kurir | PaymentCompleted | Asinkron / Event |
 
-## **Trade-Off Publish-Subscribe**
+## Trade-Off Publish-Subscribe
 
-### 1. Sistem jadi lebih rumit
+Penggunaan arsitektur Publish-Subscribe dapat mengurangi coupling antar-service,
+tetapi terdapat beberapa konsekuensi yang perlu diperhatikan.
 
-    Karena ada Message Broker, sistem jadi punya bagian tambahan yang harus
-    dikelola. Jadi tidak cuma mengurus service Pesanan, Pembayaran, Resto,
-    dan Kurir saja.
+### 1. Kompleksitas Sistem
 
-### 2. Kalau ada error lebih susah dicari
+Penambahan Message Broker membuat arsitektur menjadi lebih kompleks dibandingkan
+komunikasi langsung antar-service. Selain service yang sudah ada, sistem juga
+harus mengelola Message Broker sebagai perantara komunikasi.
 
-    Karena komunikasi menggunakan event, kita tidak selalu tahu masalahnya
-    terjadi di service mana. Jadi harus dicek dari service yang mengirim,
-    Message Broker, sampai service yang menerima.
+### 2. Debugging Lebih Sulit
 
-### 3. Pesan bisa bermasalah
+Komunikasi menggunakan event bersifat asynchronous sehingga alurnya tidak selalu
+berjalan secara linear. Ketika terjadi kesalahan, proses debugging dapat menjadi
+lebih sulit karena perlu ditelusuri dari service pengirim, Message Broker, sampai
+service penerima.
 
-    Event yang dikirim bisa saja terlambat, gagal diproses, atau bahkan
-    diterima lebih dari satu kali. Hal seperti ini perlu diperhatikan supaya
-    tidak mengganggu proses pesanan.
+### 3. Penanganan Event
 
-### 4. Tetap bergantung pada Message Broker
+Sistem perlu menangani kemungkinan event gagal dikirim, terlambat diproses,
+atau diterima lebih dari satu kali. Oleh karena itu, setiap service perlu
+memiliki mekanisme yang sesuai untuk menangani kondisi tersebut.
 
-    Walaupun service sudah tidak saling terhubung langsung, semuanya masih
-    membutuhkan Message Broker untuk mengirim event. Jadi kalau Message Broker
-    bermasalah, komunikasi antar-service juga bisa ikut terganggu.
+### 4. Ketergantungan terhadap Message Broker
 
-### 5. Lebih gampang kalau mau tambah service
+Walaupun service menjadi lebih loosely coupled satu sama lain, service-service
+tersebut tetap bergantung pada Message Broker untuk pertukaran event. Jika
+Message Broker mengalami masalah, komunikasi asynchronous antar-service dapat
+terganggu.
 
-    Kalau nantinya FoodGo mau menambahkan service baru, service tersebut bisa
-    langsung menjadi subscriber dari event yang dibutuhkan. Jadi tidak perlu
-    membuat banyak hubungan langsung dengan service lainnya.
+### 5. Skalabilitas dan Fleksibilitas
+
+Di sisi lain, Publish-Subscribe memungkinkan satu event diterima oleh beberapa
+subscriber. Service baru juga dapat ditambahkan sebagai subscriber tanpa harus
+mengubah secara langsung service yang menghasilkan event. Hal ini memberikan
+fleksibilitas ketika sistem FoodGo dikembangkan.
+
+### Kesimpulan Trade-Off
+
+Publish-Subscribe mengurangi komunikasi langsung antar-service sehingga coupling
+dapat dikurangi. Namun, keuntungan tersebut disertai konsekuensi berupa
+bertambahnya kompleksitas sistem, terutama dalam pengelolaan Message Broker,
+debugging asynchronous, dan penanganan event.
