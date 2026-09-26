@@ -23,46 +23,45 @@
 ### 2. Menambahkan Message Broker
     Message broker digunakan sebagai perantara komunikasi antar service. Di mana pesanan dapat mengirim event seperti OrderCreated ke Message Broker, kemudian event tersebut diteruskan kepada resto. Dan pembayaran juga dapat mengirim PaymentCompleted melalui message broker untuk diteruskan ke kurir
 
-## Alur Skenario End-to-End
+## **Alur Skenario End-to-End:**
 
-### Skenario
+### **Skenario**
 
-Pada skenario ini, pelanggan membuat pesanan di FoodGo. Setelah pesanan dibuat,
-pelanggan melakukan pembayaran. Jika pembayaran berhasil, informasi tersebut
-dikirim melalui Message Broker sehingga Resto dapat menerima informasi pesanan
-dan Kurir dapat melanjutkan proses penugasan.
+    Pelanggan membuat pesanan di FoodGo lalu melakukan pembayaran. Setelah
+    pembayaran berhasil, informasi pesanan dikirim melalui Message Broker
+    sehingga Resto dan Kurir dapat menerima informasi tersebut.
 
-### 1. Pelanggan membuat pesanan
+### **1. Pelanggan membuat pesanan**
 
-Pelanggan mengirimkan pesanan ke Service Pesanan. Komunikasi pada tahap ini
-dilakukan secara sinkron karena pelanggan mengirimkan request dan Service
-Pesanan memberikan response terhadap request tersebut.
+    Pelanggan mengirimkan pesanan ke Service Pesanan. Komunikasi pada tahap
+    ini dilakukan secara sinkron karena pelanggan mengirimkan request dan
+    Service Pesanan memberikan response.
 
-### 2. Pesanan melakukan pembayaran
+### **2. Pesanan melakukan pembayaran**
 
-Setelah pesanan diterima, Service Pesanan mengirimkan `RequestPayment` kepada
-Service Pembayaran. Komunikasi antara kedua service ini dilakukan secara
-sinkron dengan pola request-response. Service Pesanan menunggu hasil dari
-proses pembayaran sebelum melanjutkan ke tahap berikutnya.
+    Setelah pesanan diterima, Service Pesanan mengirimkan RequestPayment kepada
+    Service Pembayaran. Komunikasi dilakukan secara sinkron dengan pola
+    request-response. Service Pesanan menunggu hasil pembayaran sebelum
+    melanjutkan ke proses berikutnya.
 
-### 3. Pembayaran berhasil
+### **3. Pembayaran berhasil**
 
-Jika pembayaran berhasil, Service Pembayaran membuat event `PaymentCompleted`.
-Event tersebut dikirimkan ke Message Broker. Pada tahap ini komunikasi bersifat
-asinkron karena Service Pembayaran tidak perlu mengirimkan informasi secara
-langsung kepada Resto dan Kurir.
+    Jika pembayaran berhasil, Service Pembayaran membuat event PaymentCompleted.
+    Event tersebut dikirimkan ke Message Broker. Komunikasi pada tahap ini
+    bersifat asinkron karena Service Pembayaran tidak berkomunikasi langsung
+    dengan Resto dan Kurir.
 
-### 4. Resto menerima informasi pesanan
+### **4. Resto menerima informasi pesanan**
 
-Message Broker meneruskan event `PaymentCompleted` kepada Service Katalog Resto
-yang menjadi subscriber. Setelah menerima event tersebut, Resto mengetahui
-bahwa pembayaran pesanan telah berhasil dan dapat melanjutkan proses pesanan.
+    Message Broker meneruskan event PaymentCompleted kepada Service Katalog
+    Resto sebagai subscriber. Setelah menerima event tersebut, Resto mengetahui
+    bahwa pembayaran telah berhasil dan dapat melanjutkan proses pesanan.
 
-### 5. Kurir menerima informasi
+### **5. Kurir menerima informasi**
 
-Service Kurir juga menerima event dari Message Broker. Setelah mendapatkan
-informasi bahwa pembayaran telah berhasil, Service Kurir dapat melanjutkan
-proses penugasan kurir untuk pesanan tersebut.
+    Service Kurir juga menerima event PaymentCompleted dari Message Broker.
+    Setelah mendapatkan informasi bahwa pembayaran telah berhasil, Kurir dapat
+    melanjutkan proses penugasan untuk pesanan tersebut.
 
 ### Jenis Komunikasi
 
