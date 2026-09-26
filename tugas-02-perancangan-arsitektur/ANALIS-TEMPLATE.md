@@ -25,31 +25,31 @@
 
 ## **Alur Skenario End-to-End:**
 
-### **1. Pelanggan membuat pesanan**
+### 1. Pelanggan membuat pesanan
 
     Pelanggan membuat pesanan melalui Service Pesanan. Komunikasi dilakukan
     secara sinkron karena pelanggan mengirimkan request dan menerima response
     dari Service Pesanan.
 
-### **2. Melakukan pembayaran**
+### 2. Melakukan pembayaran
 
     Setelah pesanan dibuat, Service Pesanan mengirimkan RequestPayment kepada
     Service Pembayaran. Komunikasi dilakukan secara sinkron dengan pola
     request-response.
 
-### **3. Pembayaran berhasil**
+### 3. Pembayaran berhasil
 
     Jika pembayaran berhasil, Service Pembayaran mengirimkan event
     PaymentCompleted ke Message Broker. Komunikasi pada tahap ini dilakukan
     secara asinkron.
 
-### **4. Resto menerima informasi**
+### 4. Resto menerima informasi
 
     Message Broker meneruskan event PaymentCompleted kepada Service Katalog
     Resto. Resto menerima informasi bahwa pembayaran telah berhasil dan dapat
     memproses pesanan.
 
-### **5. Kurir menerima informasi**
+### 5. Kurir menerima informasi
 
     Message Broker juga meneruskan event PaymentCompleted kepada Service Kurir.
     Setelah menerima informasi tersebut, Kurir dapat melanjutkan proses
