@@ -8,6 +8,7 @@
 | [Efran Gustine Y]     | [103072400046] | [Menjelaskan alur skenario, analisis trade-off] |
 
 ### **Bukti di Skenario:**
+    Pada desain lama (![desain lama](arsitekturLama.jpeg)) pesanan terhubung secara langsung dengan resto, pembayaran, dan kurir. Sehingga setiap modul harus berkomunikasi secara langsung untuk menjalankan proses pemesanan, pembayaran, dan pengantaran
 
 ### **Kenapa arsitektur pertama keliru:**
     Karena arsitektur itu membuat setiap layanan memiliki ketergantungan langsung satu sama lain. Di mana jika terdapat perubahan atau terjadi masalah di salah satu service saja, komunikasi dengan service lain juga akan ikut terdampak. Selain itu, semakin banyak layanan yang ditambahkan akan semakin banyak juga hubungan langsung yang harus dikelola
