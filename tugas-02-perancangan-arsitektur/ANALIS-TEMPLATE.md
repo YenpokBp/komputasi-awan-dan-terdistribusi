@@ -27,71 +27,49 @@
 
 ### Skenario
 
-Pelanggan membuat pesanan, melakukan pembayaran, kemudian Resto menerima informasi
-pesanan dan Kurir dapat ditugaskan setelah pembayaran berhasil.
+Pada skenario ini, pelanggan membuat pesanan di FoodGo. Setelah pesanan dibuat,
+pelanggan melakukan pembayaran. Jika pembayaran berhasil, informasi tersebut
+dikirim melalui Message Broker sehingga Resto dapat menerima informasi pesanan
+dan Kurir dapat melanjutkan proses penugasan.
 
-### 1. Pelanggan → Pesanan
+### 1. Pelanggan membuat pesanan
 
-Komunikasi dilakukan secara **sinkron**.
+Pelanggan mengirimkan pesanan ke Service Pesanan. Komunikasi pada tahap ini
+dilakukan secara sinkron karena pelanggan mengirimkan request dan Service
+Pesanan memberikan response terhadap request tersebut.
 
-- Komponen pengirim: Pelanggan
-- Komponen penerima: Service Pesanan
-- Jenis komunikasi: Request
-- Tujuan: [jelaskan tujuan komunikasi]
+### 2. Pesanan melakukan pembayaran
 
-### 2. Pesanan → Pembayaran
+Setelah pesanan diterima, Service Pesanan mengirimkan `RequestPayment` kepada
+Service Pembayaran. Komunikasi antara kedua service ini dilakukan secara
+sinkron dengan pola request-response. Service Pesanan menunggu hasil dari
+proses pembayaran sebelum melanjutkan ke tahap berikutnya.
 
-Komunikasi dilakukan secara **sinkron** dengan pola **request-response**.
+### 3. Pembayaran berhasil
 
-- Request: `RequestPayment`
-- Pengirim: Service Pesanan
-- Penerima: Service Pembayaran
-- Alasan menggunakan komunikasi sinkron: [jelaskan alasan]
+Jika pembayaran berhasil, Service Pembayaran membuat event `PaymentCompleted`.
+Event tersebut dikirimkan ke Message Broker. Pada tahap ini komunikasi bersifat
+asinkron karena Service Pembayaran tidak perlu mengirimkan informasi secara
+langsung kepada Resto dan Kurir.
 
-Setelah menerima request, Service Pembayaran memproses pembayaran dan
-mengembalikan hasil pembayaran kepada Service Pesanan.
+### 4. Resto menerima informasi pesanan
 
-### 3. Pembayaran → Message Broker
+Message Broker meneruskan event `PaymentCompleted` kepada Service Katalog Resto
+yang menjadi subscriber. Setelah menerima event tersebut, Resto mengetahui
+bahwa pembayaran pesanan telah berhasil dan dapat melanjutkan proses pesanan.
 
-Setelah pembayaran berhasil, Service Pembayaran menghasilkan event
-`PaymentCompleted`.
+### 5. Kurir menerima informasi
 
-Komunikasi dilakukan secara **asinkron** dengan pola **event**.
+Service Kurir juga menerima event dari Message Broker. Setelah mendapatkan
+informasi bahwa pembayaran telah berhasil, Service Kurir dapat melanjutkan
+proses penugasan kurir untuk pesanan tersebut.
 
-- Event: `PaymentCompleted`
-- Pengirim: Service Pembayaran
-- Penerima: Message Broker
-- Alasan menggunakan event: [jelaskan alasan]
+### Jenis Komunikasi
 
-### 4. Message Broker → Service Katalog Resto
-
-Service Katalog Resto menjadi subscriber terhadap event yang dikirim melalui
-Message Broker.
-
-Komunikasi dilakukan secara **asinkron** dengan pola **event**.
-
-- Event: `PaymentCompleted`
-- Pengirim: Message Broker
-- Penerima: Service Katalog Resto
-- Tindakan setelah menerima event: [jelaskan]
-
-### 5. Message Broker → Service Kurir
-
-Service Kurir juga menerima event yang relevan dari Message Broker.
-
-Komunikasi dilakukan secara **asinkron** dengan pola **event**.
-
-- Event: `PaymentCompleted`
-- Pengirim: Message Broker
-- Penerima: Service Kurir
-- Tindakan setelah menerima event: [jelaskan]
-
-### Ringkasan Komunikasi
-
-| Dari | Ke | Jenis | Pola |
-|---|---|---|---|
-| Pelanggan | Pesanan | Sinkron | Request |
-| Pesanan | Pembayaran | Sinkron | Request-Response |
-| Pembayaran | Message Broker | Asinkron | Event |
-| Message Broker | Katalog Resto | Asinkron | Event |
-| Message Broker | Kurir | Asinkron | Event |
+| Komponen | Komunikasi | Jenis |
+|---|---|---|
+| Pelanggan dan Service Pesanan | Request dan response | Sinkron |
+| Service Pesanan dan Service Pembayaran | `RequestPayment` | Sinkron / Request-Response |
+| Service Pembayaran dan Message Broker | `PaymentCompleted` | Asinkron / Event |
+| Message Broker dan Service Katalog Resto | `PaymentCompleted` | Asinkron / Event |
+| Message Broker dan Service Kurir | `PaymentCompleted` | Asinkron / Event |
