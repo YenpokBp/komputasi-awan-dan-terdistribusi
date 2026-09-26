@@ -19,7 +19,6 @@ Tidak perlu software berbayar. Dua opsi:
 
 **Opsi A — Mermaid di dalam Markdown (disarankan).** Ditulis sebagai teks biasa di `README.md`, otomatis dirender jadi diagram oleh GitHub — tidak perlu install apa pun.
 
-````markdown
 ```mermaid
 flowchart LR
     Customer[Pelanggan]
@@ -46,7 +45,6 @@ flowchart LR
     Resto -->|Publish: OrderReady| Broker
     Broker -->|Subscribe| Courier
 ```
-````
 
 **Opsi B — draw.io / diagrams.net** (gratis, jalan di browser tanpa akun, atau app desktop offline di [app.diagrams.net](https://app.diagrams.net/)). Ekspor sebagai `.png` dan simpan di folder `diagram/`.
 
