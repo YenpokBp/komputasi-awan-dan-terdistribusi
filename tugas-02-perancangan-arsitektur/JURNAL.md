@@ -18,4 +18,4 @@ Alur diagram diubah dengan menempatkan proses pembayaran sebelum `Message Broker
 
 | Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
 |---|---|---|---|---|
-| ... | ... | ... | ... | ... |
+| 2026-09-26 | ChatGPT | rainstorming perancangan arsitektur FoodGo dengan Publish-Subscribe | Memberikan ide pemilihan Publish-Subscribe, penggunaan Message Broker, dan alur event PaymentCompleted | Ide dipahami, disesuaikan dengan diagram dan alur skenario kelompok, lalu ditulis kembali dengan pemahaman sendiri |

@@ -8,8 +8,10 @@
 | [Efran Gustine Y]     | [103072400046] | [Menjelaskan alur skenario, analisis trade-off] |
 
 ### **Bukti di Skenario:**
-### **Perancangan Arsitektur:**
+    Perancangan arsitektur dilakukan dengan memisahkan sistem FoodGo menjadi beberapa service, yaitu Service Pesanan, Service Pembayaran, Service Resto, dan Service Kurir. Komunikasi asynchronous antar-service menggunakan Message Broker diterapkan setelah proses pembayaran berhasil. Service Pembayaran mengirimkan event PaymentCompleted ke Message Broker, kemudian event tersebut diteruskan kepada Service Resto dan Service Kurir sebagai subscriber.
 
+### **Perancangan Arsitektur:**
+    FoodGo menggunakan beberapa service, yaitu Pesanan, Pembayaran, Resto, dan Kurir. Komunikasi antar-service menggunakan Message Broker untuk mengurangi ketergantungan langsung.
 ### **Perancangan Message Broker:**
 ### **Perancangan Diagram:**
 ### **Kenapa arsitektur pertama keliru:**
