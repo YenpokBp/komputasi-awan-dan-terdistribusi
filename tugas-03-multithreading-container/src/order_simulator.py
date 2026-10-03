@@ -13,12 +13,17 @@ import argparse
 NUM_ORDERS = 100        # jumlah pesanan simulasi yang masuk
 NUM_WORKERS = 10        # jumlah thread pekerja
 
+
 # Counter bersama untuk menghitung total pesanan yang berhasil diproses.
 # Sengaja rawan race condition jika diakses tanpa proteksi.
 processed_count = 0
 
 # TODO 1: Buat objek Lock di sini untuk melindungi `processed_count`.
 lock = threading.Lock()
+
+race_barrier = threading.Barrier(NUM_WORKERS)
+
+USE_LOCK = True  
 
 
 def process_order(order_id: int, first_order: bool = False) -> None:
