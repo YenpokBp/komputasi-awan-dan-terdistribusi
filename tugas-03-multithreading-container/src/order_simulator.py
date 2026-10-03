@@ -8,6 +8,7 @@ Jangan mengubah nama fungsi (dipakai untuk pengecekan otomatis oleh asisten).
 import threading
 import random
 import time
+import argparse
 
 NUM_ORDERS = 100        # jumlah pesanan simulasi yang masuk
 NUM_WORKERS = 10        # jumlah thread pekerja
@@ -20,7 +21,7 @@ processed_count = 0
 lock = threading.Lock()
 
 
-def process_order(order_id: int) -> None:
+def process_order(order_id: int, first_order: bool = False) -> None:
     """Proses satu pesanan. Dipanggil oleh tiap thread pekerja."""
     global processed_count
 
@@ -33,31 +34,44 @@ def process_order(order_id: int) -> None:
     # Langkah 2: bungkus increment dengan `with lock:` dan buktikan hasilnya
     #            selalu tepat NUM_ORDERS. Simpan bukti kedua kondisi ini
     #            di JURNAL.md / folder bukti/.
-    with lock:
-        processed_count += 1
+    if USE_LOCK:
+        with lock:
+            processed_count += 1
+    else:
+        current_count = processed_count
+        if first_order:
+            race_barrier.wait()
+        processed_count = current_count + 1    
 
 
 def worker(order_ids: list) -> None:
     """Satu thread pekerja memproses sekumpulan order_id."""
-    for order_id in order_ids:
-        process_order(order_id)
+    for index, order_id in enumerate(order_ids):
+        process_order(order_id, first_order=(index == 0))
 
 
 def main() -> None:
+    global processed_count, USE_LOCK
+    parser = argparse.ArgumentParser(description="Simulasi pesanan FoodGo dengan multithreading.")
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--lock", action="store_true", help="Jalankan simulasi dengan Lock")
+    mode.add_argument("--no-lock", action="store_true", help="Jalankan simulasi tanpa Lock")    
+    args = parser.parse_args()
+    USE_LOCK = not args.no_lock
+    processed_count = 0
+
     order_ids = list(range(1, NUM_ORDERS + 1))
 
     # TODO 3: Bagi `order_ids` menjadi NUM_WORKERS bagian, buat satu
     # threading.Thread per bagian yang menjalankan `worker(...)`,
     # start semua thread, lalu join semua thread sebelum lanjut.
+    chunks = [
+        order_ids[i::NUM_WORKERS] for i in range(NUM_WORKERS)
+    ]
     threads = []
-    chunk_size = NUM_ORDERS // NUM_WORKERS
 
-    for i in range(NUM_WORKERS):
-        start_idx = i * chunk_size
-        end_idx = start_idx + chunk_size
-        chunk_ids = order_ids[start_idx:end_idx]
-
-        t = threading.Thread(target=worker, args=(chunk_ids,))
+    for chunk in chunks:
+        t = threading.Thread(target=worker, args=(chunk,))
         threads.append(t)
         t.start()
 
@@ -65,9 +79,11 @@ def main() -> None:
         t.join()
 
     print(f"Total pesanan diproses: {processed_count} (seharusnya {NUM_ORDERS})")
+
     if processed_count != NUM_ORDERS:
-        print("RACE CONDITION TERDETEKSI - lengkapi TODO 1 & TODO 2 dengan Lock!")
+        print("COUNTER TIDAK SESUAI TARGET")
+    else:
+        print("COUNTER SESUAI TARGET")
 
-
-if __name__ == "__main__":
-    main()
+    if __name__ == "__main__":
+        main()
