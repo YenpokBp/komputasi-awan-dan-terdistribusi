@@ -23,7 +23,7 @@ lock = threading.Lock()
 
 race_barrier = threading.Barrier(NUM_WORKERS)
 
-USE_LOCK = True  
+USE_LOCK = True  # Gunakan Lock atau tidak (diatur lewat argumen --lock / --no-lock)
 
 
 def process_order(order_id: int, first_order: bool = False) -> None:
@@ -90,5 +90,5 @@ def main() -> None:
     else:
         print("COUNTER SESUAI TARGET")
 
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()
