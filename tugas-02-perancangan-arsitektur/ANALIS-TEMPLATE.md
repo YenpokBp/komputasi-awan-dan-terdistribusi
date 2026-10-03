@@ -12,8 +12,13 @@
 
 ### **Perancangan Arsitektur:**
     FoodGo menggunakan beberapa service, yaitu Pesanan, Pembayaran, Resto, dan Kurir. Komunikasi antar-service menggunakan Message Broker untuk mengurangi ketergantungan langsung.
+
 ### **Perancangan Message Broker:**
+    Service Pembayaran mengirim event PaymentCompleted ke Message Broker. Event tersebut diterima oleh Resto dan Kurir sebagai subscriber.
+
 ### **Perancangan Diagram:**
+    Membuat dua diagram, yaitu arsitektur lama dan arsitektur baru menggunakan Publish-Subscribe. Diagram baru menempatkan Message Broker setelah pembayaran berhasil.
+    
 ### **Kenapa arsitektur pertama keliru:**
     Karena arsitektur itu membuat setiap layanan memiliki ketergantungan langsung satu sama lain. Di mana jika terdapat perubahan atau terjadi masalah di salah satu service saja, komunikasi dengan service lain juga akan ikut terdampak. Selain itu, semakin banyak layanan yang ditambahkan akan semakin banyak juga hubungan langsung yang harus dikelola
 
