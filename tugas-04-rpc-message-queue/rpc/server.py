@@ -1,39 +1,36 @@
 """
 Tugas 4 - Jalur A: RPC Server (simulasi modul Pembayaran)
-Memakai xmlrpc.server dari Python standard library - tidak perlu install apa pun.
 """
 
 from xmlrpc.server import SimpleXMLRPCServer
 
-# Simulasi "database" saldo user
-saldo_user = {
-    "user1": 50000,
-    "user2": 120000,
+# Database simulasi
+DATABASE_SALDO = {
+    "user1": 150000,
+    "user2": 20000
 }
 
+def cek_saldo(user_id):
+    """Mengembalikan saldo user"""
+    return DATABASE_SALDO.get(user_id, 0)
 
-def cek_saldo(user_id: str) -> float:
-    """Kembalikan saldo user_id saat ini."""
-    # TODO 1: kembalikan saldo dari dict `saldo_user`.
-    # Jika user_id tidak ada, putuskan sendiri perilakunya (mis. return 0 atau raise error)
-    # dan jelaskan keputusan ini di README.md.
-    pass
-
-
-def proses_pembayaran(user_id: str, jumlah: float) -> dict:
-    """Kurangi saldo user sejumlah `jumlah`. Kembalikan status hasil."""
-    # TODO 2: validasi saldo cukup, kurangi saldo_user[user_id], dan kembalikan
-    # dict berisi minimal {"status": "sukses"/"gagal", "saldo_akhir": ...}
-    pass
-
+def proses_pembayaran(user_id, jumlah):
+    """Memotong saldo jika mencukupi"""
+    saldo = DATABASE_SALDO.get(user_id, 0)
+    if saldo >= jumlah:
+        DATABASE_SALDO[user_id] -= jumlah
+        return {"status": "SUCCESS", "sisa_saldo": DATABASE_SALDO[user_id]}
+    return {"status": "FAILED", "pesan": "Saldo tidak mencukupi"}
 
 def main():
-    # TODO 3: buat SimpleXMLRPCServer di localhost port 8000,
-    # daftarkan fungsi cek_saldo & proses_pembayaran, lalu serve_forever().
-    server = SimpleXMLRPCServer(("localhost", 8000))
-    print("RPC server modul Pembayaran berjalan di port 8000...")
+    server = SimpleXMLRPCServer(("localhost", 8000), allow_none=True)
+    print("Server RPC Modul Pembayaran berjalan di http://localhost:8000 ...")
+    
+    # Registrasi fungsi agar bisa dipanggil client
+    server.register_function(cek_saldo, "cek_saldo")
+    server.register_function(proses_pembayaran, "proses_pembayaran")
+    
     server.serve_forever()
-
 
 if __name__ == "__main__":
     main()
