@@ -49,4 +49,4 @@ Pengujian dilakukan menggunakan RabbitMQ, `publisher.py`, dan `consumer.py`
 
 | Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
 |---|---|---|---|---|
-| 09-10-2026 | ChatGPT | Bantu aku untuk memahami perbedaan RPC dan Message Queue serta mengevaluasi hasil pengujian. | AI menjelaskan konsep sinkron dan asinkron serta cara membaca status antrean RabbitMQ. | Saya mencocokkan penjelasan dengan kode dan hasil pengujian sendiri, lalu menulis analisis berdasarkan screenshot yang diperoleh. |
+| 09-10-2026 | ChatGPT | Bantu aku untuk memahami perbedaan RPC dan Message Queue serta mengevaluasi hasil pengujian. | AI menjelaskan konsep sinkron dan asinkron serta cara membaca status antrean RabbitMQ. | Kami mencocokkan penjelasan dengan kode dan hasil pengujian sendiri, lalu menulis analisis berdasarkan screenshot yang diperoleh. |
