@@ -89,4 +89,4 @@ Bagi kami kelemahannya yaitu bisa menghasilkan banyak pesan ketika proses electi
 
 ### Bully vs Raft
 
-Bully itu lebih sederhana untuk dipahami dan cocok untuk simulasi dengan jumlah node kecil seperti 5 node di tugas ini. Sedangkan raft itu lebih cocok digunakan pada sistem terdistribusi yang membutuhkan koordinsai lebih baik dan data yang tetap konsisten
+Bully itu lebih sederhana untuk dipahami dan cocok untuk simulasi dengan jumlah node kecil seperti 5 node di tugas ini. Sedangkan raft itu lebih cocok digunakan pada sistem terdistribusi yang membutuhkan koordinsai lebih baik dan data yang tetap konsisten~

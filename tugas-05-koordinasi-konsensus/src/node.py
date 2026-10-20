@@ -80,7 +80,7 @@ class Node:
             if sender_id > self.node_id:
                 with self.lock:
                     self.leader_id = sender_id
-                print(f"[Node {self.node_id}] Menerima pesan 'COORDINATOR'. Leader saat ini adalah Node {sender_id}")
+                print(f"[{timestamp()}] [Node {self.node_id}] Menerima pesan 'COORDINATOR'. Leader saat ini adalah Node {sender_id}")
                 self.coordinator_event.set()
             else:
                 # Pengumuman dari node lebih rendah tidak valid: node ini lebih berhak jadi leader
@@ -125,7 +125,7 @@ class Node:
                 if self.coordinator_event.wait(COORDINATOR_TIMEOUT):
                     return
 
-                print(f"[Node {self.node_id}] COORDINATOR tidak datang, mengulang election")
+                print(f"[{timestamp()}] [Node {self.node_id}] COORDINATOR tidak datang, mengulang election")
         finally:
             with self.lock:
                 self.election_in_progress = False
@@ -134,8 +134,7 @@ class Node:
         """Node ini menyatakan dirinya leader dan memberi tahu semua node lain."""
         with self.lock:
             self.leader_id = self.node_id
-        print(f"[Node {self.node_id}] Mengumumkan diri sebagai LEADER (broadcast COORDINATOR)")
-
+            print(f"[{timestamp()}] [Node {self.node_id}] Mengumumkan diri sebagai LEADER (broadcast COORDINATOR)")
         # Broadcast di luar lock agar tidak menahan thread lain
         for pid, port in self.peers.items():
             self.send_message(port, "COORDINATOR")
@@ -156,7 +155,7 @@ class Node:
             if leader_port:
                 is_alive = self.send_message(leader_port, "PING")
                 if not is_alive:
-                    print(f"[Node {self.node_id}] Leader (Node {current_leader}) mati! Memicu pemilihan ulang...")
+                    print(f"[{timestamp()}] [Node {self.node_id}] Leader (Node {current_leader}) mati! Memicu pemilihan ulang...")
                     with self.lock:
                         self.leader_id = None
                     threading.Thread(target=self.start_election, daemon=True).start()
