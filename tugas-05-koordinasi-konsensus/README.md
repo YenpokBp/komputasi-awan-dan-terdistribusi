@@ -61,3 +61,32 @@ tugas-05-koordinasi-konsensus/
 Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — lihat [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Boleh bertanya ke AI tentang gambaran umum algoritma election; **tidak boleh** meminta AI menuliskan isi `# TODO` di `src/node.py` (logika `on_message`, `start_election`, `declare_leader`, `monitor_leader`). Catat pemakaian AI di "Log Penggunaan AI" pada `JURNAL.md`.
 
 - `README.md` wajib menjelaskan kenapa Bully Algorithm selalu memilih node ber-ID tertinggi yang masih hidup, dan apa kelemahannya dibanding algoritma lain (mis. jumlah pesan yang dikirim saat election, single point of failure sebelum leader baru terpilih) — bukan sekadar definisi generik.
+
+## Hasil Pengujian
+
+### Skenario 1 - Start Normal
+Kelomaima node dijalankan secara bersamaan. Setelah itu proses election, dimana node terpilih sebagai leader karena ia memiliki ID yang tertinggi dibandingkan dengan node lainnya.
+Karena node 1, 2, 3, dan menerima pesan coordinator dari node 5 dan menetapkan node 5 sebagai leader
+
+### Skenario 2 - Leader Mati
+
+Node 5 yang sebelumnya menjadi leader kita matikan dengan menggunakan Ctrl+C. Sehingga node lain mendeteksi kalau node 5 itu tidak lagi merespons
+Jadi proses election kemudian dijalankan kembali.Kemudian yang terjadi adalah node 4 itu menjadi node dengan id tertinggi yang masih aktif, sehingga node 4 terpilih sebagai leader baru dan mengiirmkan pesan coordinator kepada node lainnya
+
+## Analisis
+
+### Mengapa FoodGo membutuhkan leader?
+
+Dengan adanya leader ini dapat digunakan untuk mengatur koordinasi pemrosesan pesana agar beberapa node tidak memproses pesanan yang sama secara bersamaa. Jadi dengan adanya leader, programa akan mendapat 1 node yang menjadi pusaat koordinasi sehingga urutan pemrosesan pesanan nanti dapat lebih konsisten
+
+### Mengapa menggunakan Bully Algorithm?
+
+Karena Bully Algorithm ini cocok banget digunakan pada simulasi yang seperti ini di mana mekanismenya itu sederhana dan dapat menentukan leader berdasarkan id node tertinggi yang masih aktif. Sehingga waktu leader gagal, node yang lain itu bisa melakukan election juga dan memilih node dengan id tertinggi berikutnya.
+
+### Kelemahan Bully Algirthm
+
+Bagi kami kelemahannya yaitu bisa menghasilkan banyak pesan ketika proses election terjadi, terutama jika jumlah nodenya itu semakin banyak. Selain itu, selama proses pemilihan leader terdapat waktu ketika sistem belum memliki leader juga jadi koordinasinya itu bisa terganggu
+
+### Bully vs Raft
+
+Bully itu lebih sederhana untuk dipahami dan cocok untuk simulasi dengan jumlah node kecil seperti 5 node di tugas ini. Sedangkan raft itu lebih cocok digunakan pada sistem terdistribusi yang membutuhkan koordinsai lebih baik dan data yang tetap konsisten

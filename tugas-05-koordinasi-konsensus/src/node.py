@@ -4,11 +4,14 @@ Tugas 5 - Simulasi Node untuk Bully Algorithm
 Infrastruktur jaringan (socket server/client) dipertahankan.
 Logika Bully Algorithm diperbaiki.
 """
-
 import argparse
 import socket
 import threading
 import time
+from datetime import datetime
+
+def timestamp():
+    return datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
 ELECTION_TIMEOUT = 2.0      # detik menunggu balasan OK dari node lebih tinggi
 COORDINATOR_TIMEOUT = 5.0   # detik menunggu COORDINATOR setelah menerima OK
