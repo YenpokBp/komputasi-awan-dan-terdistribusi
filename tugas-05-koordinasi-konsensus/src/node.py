@@ -64,7 +64,7 @@ class Node:
     def on_message(self, sender_id: int, msg_type: str):
         """Dipanggil setiap kali node ini menerima pesan dari node lain."""
         if msg_type == "ELECTION":
-            print(f"[Node {self.node_id}] Menerima pesan 'ELECTION' dari node {sender_id}")
+            print(f"[{timestamp()}] [Node {self.node_id}] Menerima pesan 'ELECTION' dari node {sender_id}")
             if self.node_id > sender_id:
                 # Balas OK ke node yang ID-nya lebih kecil, lalu ikut election sendiri
                 target_port = self.peers.get(sender_id)
@@ -73,7 +73,7 @@ class Node:
                 threading.Thread(target=self.start_election, daemon=True).start()
 
         elif msg_type == "OK":
-            print(f"[Node {self.node_id}] Menerima pesan 'OK' dari node {sender_id}")
+            print(f"[{timestamp()}] [Node {self.node_id}] Menerima pesan 'OK' dari node {sender_id}")
             self.ok_event.set()
 
         elif msg_type == "COORDINATOR":
@@ -84,7 +84,7 @@ class Node:
                 self.coordinator_event.set()
             else:
                 # Pengumuman dari node lebih rendah tidak valid: node ini lebih berhak jadi leader
-                print(f"[Node {self.node_id}] Mengabaikan 'COORDINATOR' dari Node {sender_id} (ID lebih rendah), memulai election")
+                print(f"[{timestamp()}] [Node {self.node_id}] Mengabaikan 'COORDINATOR' dari Node {sender_id} (ID lebih rendah), memulai election")
                 threading.Thread(target=self.start_election, daemon=True).start()
 
         elif msg_type == "PING":
@@ -103,7 +103,7 @@ class Node:
                 self.coordinator_event.clear()
 
                 higher_peers = {pid: p for pid, p in self.peers.items() if pid > self.node_id}
-                print(f"[Node {self.node_id}] Memulai election ke peer lebih tinggi: {list(higher_peers.keys())}")
+                print(f"[{timestamp()}] [Node {self.node_id}] Memulai election ke peer lebih tinggi: {list(higher_peers.keys())}")
 
                 # Kirim ELECTION ke semua node yang ID-nya lebih tinggi
                 sent_any = False
