@@ -27,8 +27,78 @@ python3 src/chord_simulation.py
 ## Tugas Analisis (`README.md`)
 
 1. Jelaskan **kenapa DHT/Chord** lebih cocok untuk kasus ini dibanding **flat naming sederhana** (mis. tabel pusat ID→IP) atau **DNS konvensional** — kaitkan dengan sifat "IP kurir sering berubah" dan kebutuhan tanpa titik gagal tunggal.
+ - Pada kasus FoodGo, ID kurir bersifat tetap, sedangkan alamat IP dapat berubah. Chord DHT dapat digunakan untuk mencari alamat IP berdasarkan ID kurir tanpa bergantung pada satu server pusat.
+ - Pada Chord, ID kurir di-hash dan dipetakan ke node yang sesuai pada ring. Sehingga hal ini juga memungkinkan pembagian data ke beberapa node.
+ - Dibandingkan dengan flat naming yang menggunakan satu tempat untuk menyimpan seluruh mapping, Chord lebih cocok untuk simulasi sistem terdistribusi. DNS juga memiliki fungsi pemetaan nama ke IP, tetapi pada tugas ini yang lebih penting adalah pembagian tanggung jawab data antar-node dan perubahan topology.
+
 2. Gambarkan (boleh pakai Mermaid, lihat Tugas 2) ring topology dari simulasi kalian, tandai node mana yang bertanggung jawab atas ID Kurir mana.
+   ## 2. Ring Topology
+
+Program menggunakan ruang identifier `0–255` (`m=8`).
+
+Node yang digunakan:
+
+| Node | Hash |
+|---|---:|
+| node-bandung-1 | 40 |
+| node-jakarta-2 | 102 |
+| node-medan-1 | 123 |
+| node-surabaya-1 | 136 |
+| node-jakarta-1 | 177 |
+
+### Sebelum node Medan bergabung
+
+```mermaid
+flowchart LR
+    A["Node 40<br/>Bandung"] --> B["Node 102<br/>Jakarta-2"]
+    B --> C["Node 136<br/>Surabaya"]
+    C --> D["Node 177<br/>Jakarta-1"]
+    D --> A
+```
+
+### Setelah node Medan bergabung
+
+```mermaid
+flowchart LR
+    A["Node 40<br/>Bandung"] --> B["Node 102<br/>Jakarta-2"]
+    B --> C["Node 123<br/>Medan"]
+    C --> D["Node 136<br/>Surabaya"]
+    D --> E["Node 177<br/>Jakarta-1"]
+    E --> A
+```
+
+Pada pengujian, `kurir-test-024` memiliki hash `109`. Sebelum node 123 masuk, kurir tersebut berada di node 136. Setelah node 123 bergabung, tanggung jawabnya berpindah:
+
+```text
+node 136 → node 123
+```
+
+Output:
+
+```text
+[MIGRASI] kurir-test-024 (hash=109) : node 136 -> node 123
+```
 3. Jelaskan apa yang terjadi pada mapping saat sebuah node **keluar** dari ring (siapa yang mengambil alih tanggung jawabnya) — dukung dengan output program.
+- Ketika node keluar, data yang sebelumnya menjadi tanggung jawab node tersebut dipindahkan ke successor-nya.
+- Pada pengujian, node-jakarta-1 memiliki hash 177 dan successor-nya adalah node 40.
+- kurir-leave-001 memiliki hash 162, sehingga sebelumnya berada di node 177.
+
+Saat node 177 keluar:node 177 menjadi node 40
+
+Output:
+[MIGRASI] kurir-leave-001 (hash=162) : node 177 menjadi node 40
+
+Penelusuran Manual lookup()
+Contoh: kurir-001
+1. Hash kurir-001 menghasilkan 50.
+2. Node yang tersedia: 40, 102, 136, 177.
+3. Node pertama yang memiliki ID ≥ 50 adalah 102.
+4. Jadi successor dari hash 50 adalah node 102.
+5. Mapping kurir-001 menghasilkan IP 192.168.1.10.
+   
+Hasil program:
+[LOOKUP] kurir-001 > hash=50 > node-102
+kurir-001 > 192.168.1.10
 
 ## Struktur Submission
 
