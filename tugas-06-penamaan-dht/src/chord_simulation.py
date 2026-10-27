@@ -204,6 +204,7 @@ def main():
     ring.register_kurir("kurir-001", "192.168.1.10")
     ring.register_kurir("kurir-002", "192.168.1.11")
     ring.register_kurir("kurir-003", "192.168.1.12")
+    ring.register_kurir("kurir-test-024", "192.168.1.13")
 
     print("\n--- Lookup sebelum perubahan topologi ---")
     print("kurir-001 ->", ring.lookup("kurir-001"))
