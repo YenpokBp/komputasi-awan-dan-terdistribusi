@@ -24,27 +24,29 @@ class ChordRing:
         # key kurir (hasil hash) -> IP kurir yang disimpan node yang bertanggung jawab
         self.data: dict[int, tuple[str, str]] = {}  # hash -> (kurir_id, ip_kurir)
 
-    def join(self, node_id: int, ip_node: str):
-        print(f"\n[JOIN] Node {node_id} ({ip_node}) bergabung")
+    def join(self, node_id: str, ip_node: str):
+        node_hash = hash_id(node_id)
+
+        print(f"\n[JOIN] Node {node_id} (hash={node_hash}, IP={ip_node}) bergabung")
 
     # Jika belum ada node, langsung tambahkan
         if not self.nodes:
-            self.nodes[node_id] = ip_node
+            self.nodes[node_hash] = ip_node
             print(f"[JOIN] Node {node_id} menjadi node pertama di ring")
             return
 
     # Cari successor lama sebelum node baru ditambahkan
-        old_successor = self.find_successor(node_id)
+        old_successor = self.find_successor(node_hash)
 
-    # Tambahkan node baru ke ring
-        self.nodes[node_id] = ip_node
+    # Tambahkan node baru ke ring menggunakan hash sebagai ID
+        self.nodes[node_hash] = ip_node
 
     # Cari predecessor node baru setelah node ditambahkan
-        predecessor_baru = self._get_predecessor(node_id)
+        predecessor_baru = self._get_predecessor(node_hash)
 
         print(
-            f"[JOIN] Node {node_id} berada di antara "
-            f"{predecessor_baru} dan {old_successor}"
+            f"[JOIN] Node {node_id} (hash={node_hash}) berada di antara "
+            f"node {predecessor_baru} dan node {old_successor}"
         )
 
     # Cari data yang sekarang menjadi tanggung jawab node baru
@@ -54,39 +56,45 @@ class ChordRing:
             if self._in_interval(
                 key_hash,
                 predecessor_baru,
-                node_id
+                node_hash,
+                inclusive_right=True
             ):
                 print(
                     f"[MIGRASI] {kurir_id} "
                     f"(hash={key_hash}) : "
-                    f"node {old_successor} -> node {node_id}"
+                    f"node {old_successor} -> node {node_hash}"
                 )
                 migrated += 1
 
         print(
             f"[JOIN] {migrated} data perlu dimigrasikan "
-            f"ke node {node_id}"
+            f"ke node {node_hash}"
         )
 
-    def leave(self, node_id: int):
-        if node_id not in self.nodes:
-            print(f"[LEAVE] Node {node_id} tidak ditemukan")
+    def leave(self, node_id: str):
+        node_hash = hash_id(node_id)
+
+        if node_hash not in self.nodes:
+            print(f"[LEAVE] Node {node_id} (hash={node_hash}) tidak ditemukan")
             return
 
-        print(f"\n[LEAVE] Node {node_id} meninggalkan ring")
+        print(
+            f"\n[LEAVE] Node {node_id} "
+            f"(hash={node_hash}) meninggalkan ring"
+        )
 
     # Cari successor dari node yang akan keluar
         keys_sorted = sorted(self.nodes.keys())
-        index = keys_sorted.index(node_id)
+        index = keys_sorted.index(node_hash)
 
         successor_id = keys_sorted[(index + 1) % len(keys_sorted)]
 
     # Cari predecessor dari node yang akan keluar
-        predecessor_id = self._get_predecessor(node_id)
+        predecessor_id = self._get_predecessor(node_hash)
 
         print(
-            f"[LEAVE] Node {node_id} memiliki predecessor "
-            f"{predecessor_id} dan successor {successor_id}"
+            f"[LEAVE] Node {node_id} (hash={node_hash}) memiliki "
+            f"predecessor {predecessor_id} dan successor {successor_id}"
         )
 
     # Cari data yang harus dimigrasikan ke successor
@@ -96,18 +104,27 @@ class ChordRing:
             if self._in_interval(
                 key_hash,
                 predecessor_id,
-                node_id
+                node_hash,
+                inclusive_right=True
             ):
                 print(
                     f"[MIGRASI] {kurir_id} "
                     f"(hash={key_hash}) : "
-                    f"node {node_id} -> node {successor_id}"
+                    f"node {node_hash} -> node {successor_id}"
                 )
                 migrated += 1
 
         print(
             f"[LEAVE] {migrated} data perlu dimigrasikan "
-            f"dari node {node_id} ke node {successor_id}"
+            f"dari node {node_hash} ke node {successor_id}"
+        )
+
+    # Hapus node setelah proses migrasi selesai
+        del self.nodes[node_hash]
+
+        print(
+            f"[LEAVE] Node {node_id} (hash={node_hash}) "
+            f"berhasil dihapus dari ring"
         )
 
     def find_successor(self, key_hash: int) -> int:
