@@ -99,3 +99,39 @@ tugas-07-konsistensi-data/
 Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — lihat [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Boleh bertanya konsep umum consistency model ke AI untuk brainstorming; **tidak boleh** meminta AI menuliskan analisis akhir/sequence diagram atau isi `# TODO` di `src/replica_simulation.py` yang tinggal ditempel. Catat pemakaian AI di "Log Penggunaan AI" pada `JURNAL.md`.
 
 - Sebagai bukti pemahaman konsep (bukan hafalan jawaban skenario FoodGo saja), `README.md` wajib menyertakan **satu skenario tambahan** yang kalian buat sendiri (mis. kasus lain di aplikasi ojek online) dan menentukan model konsistensi yang tepat untuk skenario tambahan tersebut.
+
+### Bagian 3 — Skenario Tambahan
+
+#### 1. Deskripsi Skenario
+Pelanggan memesan makanan melalui FoodGo, lalu sistem menyimpan pesanan dengan status **"Menunggu Konfirmasi"**. Setelah restoran mengonfirmasi, server Jakarta memperbarui status menjadi **"Sedang Diproses"**. Pembaruan ini kemudian direplikasi ke server Bandung, tetapi prosesnya membutuhkan waktu. Jika pelanggan membuka aplikasi saat replikasi belum selesai dan permintaannya dilayani server Bandung, aplikasi masih menampilkan status lama.
+
+#### 2. Permasalahan Konsistensi
+
+| Server | Status tersimpan | Keterangan |
+|---|---|---|
+| Jakarta | Sedang Diproses | Sudah menerima pembaruan terbaru |
+| Bandung | Menunggu Konfirmasi | Belum menerima replikasi (data usang) |
+
+Pelanggan yang dilayani server Bandung melihat status yang tidak sesuai kondisi sebenarnya. Ia berpotensi mengira restoran belum menerima pesanan, lalu menghubungi *customer service* atau membatalkan pesanan yang sedang dimasak.
+
+#### 3. Model Konsistensi yang Dipilih
+**Eventual Consistency**, dilengkapi **Read-Your-Writes** untuk aksi yang dilakukan pelanggan sendiri (misalnya membuat atau membatalkan pesanan).
+
+#### 4. Alasan Pemilihan
+
+**Dampak keterlambatan pembaruan status.**
+Keterlambatan biasanya hanya beberapa detik dan berdampak pada kenyamanan pengguna, bukan kerugian finansial langsung seperti pada saldo e-wallet.
+
+**Apakah perbedaan data sementara dapat ditoleransi?**
+Ya, karena:
+- Perbedaan hanya sementara dan data pasti konvergen ke status yang benar.
+- Status berubah searah dan berurutan (Menunggu Konfirmasi → Sedang Diproses → Dikirim → Selesai), sehingga tidak ada konflik data yang rumit.
+- Selisih beberapa detik hampir tidak terasa oleh pengguna.
+
+**Bagaimana model yang dipilih membantu mengatasi masalah?**
+- *Eventual Consistency* menjaga aplikasi tetap cepat dan selalu tersedia, karena server Bandung tidak perlu menunggu sinkronisasi dengan Jakarta untuk melayani pelanggan.
+- *Read-Your-Writes* memastikan pelanggan langsung melihat hasil aksinya sendiri, misalnya status setelah memesan atau membatalkan.
+- Aksi kritis seperti pembatalan divalidasi di server utama, sehingga pesanan yang sudah diproses tidak bisa dibatalkan hanya karena tampilan belum diperbarui.
+
+**Perbedaan dengan kasus saldo e-wallet:**
+Saldo e-wallet menuntut ketepatan data (Strong/Sequential Consistency) karena menyangkut uang. Status pesanan lebih mengutamakan kecepatan dan ketersediaan karena sifatnya informatif dan toleran terhadap jeda singkat. Ini menunjukkan bahwa kebutuhan konsistensi bergantung pada jenis data dan dampak bisnisnya.
