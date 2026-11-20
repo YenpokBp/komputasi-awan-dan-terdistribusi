@@ -6,7 +6,6 @@ Mengembalikan ID instance-nya sendiri supaya distribusi beban bisa diamati.
 import os
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib import response
 
 # TODO 1: ambil ID instance dari environment variable "INSTANCE_ID"
 # (akan di-set berbeda per service di docker-compose.yml).
@@ -22,6 +21,8 @@ class Handler(BaseHTTPRequestHandler):
         # body: f"Ditangani oleh instance: {INSTANCE_ID}\n"
         self.send_response(200)
         self.send_header("Content-Type", "text/plain")
+        self.end_headers()
+        
         response = f"Ditangani oleh instance: {INSTANCE_ID}\n"
         self.wfile.write(response.encode("utf-8"))
 
