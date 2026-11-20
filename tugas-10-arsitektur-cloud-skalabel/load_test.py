@@ -17,24 +17,25 @@ CONCURRENCY = 30
 
 hasil = Counter()
 lock = threading.Lock()
-
+semaphore = threading.Semaphore(CONCURRENCY)
 
 def kirim_request():
+    try:
+        with semaphore:
     # TODO 1: lakukan GET request ke TARGET_URL, baca body response
     # (yang berisi INSTANCE_ID dari app/app.py), lalu update `hasil`
     # (Counter) dengan lock supaya thread-safe.
-    try:
-        with urllib.request.urlopen(TARGET_URL, timeout=5) as resp:
-            body = resp.read().decode()
+            with urllib.request.urlopen(TARGET_URL, timeout=5) as resp:
+                body = resp.read().decode()
             # TODO 2: ekstrak instance_id dari `body` sesuai format response
             # yang kalian buat di app.py, lalu:
-            # with lock:
-            #     hasil[instance_id] += 1
-            pass
+                instance_id = body.strip()
+                with lock:
+                    hasil[instance_id] += 1
     except Exception as e:
         with lock:
             hasil["ERROR"] += 1
-
+        print(f"Request gagal: {e}")
 
 def main():
     print(f"Mengirim {TOTAL_REQUESTS} request dengan concurrency {CONCURRENCY} ...")
