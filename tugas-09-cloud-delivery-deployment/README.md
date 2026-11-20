@@ -14,17 +14,22 @@ Pemerintah ingin membangun **Sistem Data Kependudukan** (nama, NIK, alamat, data
 ## Tugas Kelompok
 
 1. **Rekomendasikan Deployment Model** (Public / Private / Hybrid / Community Cloud) yang paling tepat untuk sistem ini. Jelaskan alasannya berdasarkan **karakteristik NIST** (on-demand self-service, broad network access, resource pooling, rapid elasticity, measured service) dikaitkan dengan kebutuhan kerahasiaan vs skalabilitas.
-<<<<<<< HEAD
-   
-=======
 
 Rekomendasi Deployment Model: Hybrid Cloud [Zaki]
 Berdasarkan analisis ketegangan arsitektural antara tuntutan kedaulatan data mutlak dan elastisitas akses massal, model penyebaran yang paling tepat Hybrid Cloud. Arsitektur ini memisahkan beban kerja secara tegas ke dalam dua segmen terintegrasi:
-- Segmen Private Cloud (Pusat Data Nasional): Dikelola dan dikendalikan sepenuhnya oleh pemerintah untuk menyimpan basis data inti kependudukan (NIK, biodata, dan template biometrik) serta menjalankan mesin pencocokan identitas internal
-- Segmen Public cloud (Lapisan Antarmuka & Komputasi Publik): Berfungsi sebagai lapisan pemrosesan tanpa penyimpanan permanen (stateless compute layer) yang menampung API Gateway, penyeimbang beban (load balancer), dan antarmuka verifikasi bagi ribuan instansi mitrasegmen Public cloud (Lapisan Antarmuka & Komputasi Publik): Berfungsi sebagai lapisan pemrosesan tanpa penyimpanan permanen (stateless compute layer) yang menampung API Gateway, penyeimbang beban (Load balancer), dan antarmuka verifikasi hari ribuan instansi mitra
+- Segmen Private Cloud (Pusat Data Nasional): Dikelola dan dikendalikan sepenuhnya oleh pemerintah untuk menyimpan basis data inti kependudukan (NIK, biodata, dan template biometrik), menjalankan mesin pencocokan identitas, serta menangani API Gateway internal dan proses verifikasi identitas. Seluruh pemrosesan data pribadi tetap berada dalam lingkungan Private Cloud.
+- Segmen Public cloud (Lapisan Antarmuka & Komputasi Publik): BBerfungsi sebagai lapisan pendukung yang menyediakan antarmuka informasi umum, portal layanan non-sensitif, serta komponen penerima permintaan awal yang tidak menyimpan atau memproses data pribadi sensitif. Apabila terdapat permintaan verifikasi yang membutuhkan data kependudukan, proses tersebut diteruskan melalui koneksi aman menuju layanan inti di Private Cloud
 
->>>>>>> 68311cf3cca1527b5bd802415c26aa48eca00dea
+
 2. **Rekomendasikan Service Model** (IaaS / PaaS / SaaS) yang tepat untuk komponen-komponen berbeda dari sistem ini (boleh berbeda service model untuk komponen berbeda, mis. database inti vs portal publik untuk pengecekan status).
+
+Pada sistem ini kami memutuskan untuk menggunakan kombinasi service model IaaS, PaaS, dan SaaS karena ketiga model itu memeiliki kebutuhan yang berbeda setiap komponennya. 
+- Komponen yang menggunakan Iaas: Server database utama kependudukan, Infrastruktur penyimpanan data NIK dan biometrik, Virtual Machine untuk menjalankan aplikasi inti, Infrastruktur jaringan dan keamanan server. Alasannya IaaS memberikan pemerintah kendali lebih besar terhadap pengelolaan infrastruktur, seperti server, penyimpanan, jaringan, dan sistem operasi. Hal ini penting karena sistem mengelola data pribadi warga yang bersifat rahasia. Jadi fokus utamanya ada pada infrastruktur sehingga dapat mengendalikan server dan penyimpanan data sensitif
+- Komponen yang menggunakan PaaS: Platform pengelolaan aplikasi kependudukan, Middleware untuk komunikasi antarlayanan, Platform pengolahan dan pencocokan identitas, Layanan API untuk menghubungkan aplikasi dengan database. Alasannya PaaS membantu tim pengembang mengelola dan menjalankan aplikasi tanpa harus mengatur seluruh infrastruktur server secara manual. Penggunaannya di Private Cloud memungkinkan pemrosesan data sensitif tetap berada dalam lingkungan yang dikendalikan pemerintah. Jadi fokus utamaanyaada pada platform aplikasi di mana untuk mempermudah pengembangan dan pengelolaan layanan kependudukan
+- Komponen yang menggunakan SaaS: Dashboard monitoring layanan pendukung, Aplikasi administrasi non-sensitif, dan Dokumentasi dan portal informasi umum. Alasannya SaaS memungkinkan pemerintah menggunakan perangkat lunak yang sudah tersedia tanpa perlu membangun dan memelihara seluruh aplikasinya sendiri. Namun, layanan yang digunakan harus dipastikan tidak menyimpan atau memproses data pribadi kependudukan yang sensitif. Jadi fokus utamanya ada pada perangkat lunak siap pakai, di mana dapat mempermudah monitoring dan administrasi non-sensitif
+
+Dari penjelasan ini dapat disimpulkan bahwa pembagian ini dapat membantu menjaga kendali data sekaligus mempermudah pengelolaan aplikasi. sehingga kita tidak menggunakan 1 service model saja karena setiap komponennya memiliki kebutuhan pengelolaan yang berbeda
+
 3. Jelaskan **minimal 2 risiko spesifik** dari pilihan kalian dan mitigasinya (mis. jika Hybrid Cloud dipilih: risiko sinkronisasi data antara private & public segment).
 
 Analisis Risiko Spesifik & Strategi Mitigasi [Zaki]
