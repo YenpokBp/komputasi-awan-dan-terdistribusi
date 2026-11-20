@@ -64,6 +64,29 @@ Risiko 2: Inkonsistensi Status Kependudukan Akibat Keterlambatan Sinkronisasi Da
   - Membatasi masa berlaku cache dan melakukan pengecekan ulang ke Private Cloud untuk verifikasi yang bersifat kritis.
 
 4. Bandingkan singkat dengan **satu alternatif yang kalian tolak** — kenapa alternatif itu kurang tepat (mis. kenapa Public Cloud murni ditolak, atau kenapa Private Cloud murni dianggap kurang skalabel).
+**Alternatif yang ditolak: Public Cloud murni.** Alasan utamanya adalah bahwa model ini bertentangan langsung dengan syarat studi kasus, yaitu data tidak boleh berada di infrastruktur yang tidak sepenuhnya dikendalikan negara.
+
+Alasan Penolakan
+
+**1. Kedaulatan dan kontrol data tidak terjamin.**
+Pada Public Cloud, infrastruktur dimiliki dan dioperasikan penyedia pihak ketiga, dengan *resource pooling* yang berbagi perangkat keras dengan banyak pelanggan lain (*multi-tenant*). Untuk data NIK, alamat, dan biometrik yang sangat rahasia, pemerintah tidak punya kendali penuh atas lokasi fisik data, siapa yang punya akses administratif ke server, maupun hukum negara mana yang dapat menjangkau data tersebut. Ini sulit dipenuhi dengan kewajiban pelindungan data pribadi dalam UU PDP.
+ 
+**2. Risiko biometrik bersifat permanen.**
+Seperti pada Risiko 1, data biometrik tidak dapat diganti seperti kata sandi. Jika terjadi kebocoran akibat salah konfigurasi, celah *hypervisor*, atau serangan antar-*tenant*, dampaknya berlaku seumur hidup bagi warga. Pada Public Cloud murni, permukaan serangan ini jauh lebih besar karena seluruh data inti ikut berada di sana.
+ 
+**3. Ketergantungan pada penyedia (*vendor lock-in*).**
+Dengan data kependudukan nasional sepenuhnya di satu penyedia komersial, negara bergantung pada kebijakan, harga, dan kelangsungan bisnis penyedia tersebut. Gangguan layanan atau sengketa dapat melumpuhkan layanan identitas nasional.
+ 
+**4. Keunggulan elastisitasnya sudah bisa didapat lewat Hybrid.**
+Memang benar Public Cloud unggul dalam *rapid elasticity*, *on-demand self-service*, dan *measured service* untuk menangani lonjakan saat pemilu atau PPDB. Namun keunggulan itu tidak perlu dibayar dengan menyerahkan data inti. Pada Hybrid Cloud, elastisitas tetap dimanfaatkan di lapisan antarmuka dan penerima permintaan, sedangkan data dan proses pencocokan identitas tetap di Private Cloud.
+
+| Aspek | Public Cloud Murni | Hybrid Cloud (pilihan kami) |
+|---|---|---|
+| Kontrol data inti | Dipegang penyedia pihak ketiga | Penuh di tangan pemerintah (Private) |
+| Kepatuhan UU PDP | Sulit dijamin | Terpenuhi, data pribadi tidak keluar dari Private |
+| Elastisitas saat lonjakan | Sangat baik | Baik, lewat segmen Public |
+| Risiko kebocoran biometrik | Tinggi, permukaan serangan luas | Lebih terkendali dengan mitigasi di jalur verifikasi |
+| Ketergantungan vendor | Tinggi | Rendah, data inti tetap milik negara |
 
 ## Struktur Submission
 
