@@ -19,7 +19,11 @@ Rekomendasi Deployment Model: Hybrid Cloud [Zaki]
 Berdasarkan analisis ketegangan arsitektural antara tuntutan kedaulatan data mutlak dan elastisitas akses massal, model penyebaran yang paling tepat Hybrid Cloud. Arsitektur ini memisahkan beban kerja secara tegas ke dalam dua segmen terintegrasi:
 - Segmen Private Cloud (Pusat Data Nasional): Dikelola dan dikendalikan sepenuhnya oleh pemerintah untuk menyimpan basis data inti kependudukan (NIK, biodata, dan template biometrik), menjalankan mesin pencocokan identitas, serta menangani API Gateway internal dan proses verifikasi identitas. Seluruh pemrosesan data pribadi tetap berada dalam lingkungan Private Cloud.
 - Segmen Public cloud (Lapisan Antarmuka & Komputasi Publik): BBerfungsi sebagai lapisan pendukung yang menyediakan antarmuka informasi umum, portal layanan non-sensitif, serta komponen penerima permintaan awal yang tidak menyimpan atau memproses data pribadi sensitif. Apabila terdapat permintaan verifikasi yang membutuhkan data kependudukan, proses tersebut diteruskan melalui koneksi aman menuju layanan inti di Private Cloud
-
+    1. On-Demand Self-Service: Pengguna dapat menggunakan layanan cloud secara mandiri tanpa bantuan penyedia, misalnya membuat server virtual sendiri.
+    2. Broad Network Access: Layanan dapat diakses melalui internet menggunakan berbagai perangkat, seperti laptop, smartphone, dan tablet.
+    3. Resource Pooling: Sumber daya komputasi digunakan bersama oleh banyak pengguna secara efisien.
+    4. Rapid Elasticity: Kapasitas layanan dapat ditambah atau dikurangi sesuai kebutuhan secara cepat.
+    5. Measured Service: Penggunaan layanan dipantau dan dihitung sehingga pengguna membayar sesuai sumber daya yang digunakan.
 
 2. **Rekomendasikan Service Model** (IaaS / PaaS / SaaS) yang tepat untuk komponen-komponen berbeda dari sistem ini (boleh berbeda service model untuk komponen berbeda, mis. database inti vs portal publik untuk pengecekan status).
 
