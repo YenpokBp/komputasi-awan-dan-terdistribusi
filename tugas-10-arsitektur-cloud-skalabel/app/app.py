@@ -21,6 +21,7 @@ class Handler(BaseHTTPRequestHandler):
         # body: f"Ditangani oleh instance: {INSTANCE_ID}\n"
         self.send_response(200)
         self.send_header("Content-Type", "text/plain")
+        self.end_headers()
         response = f"Ditangani oleh instance: {INSTANCE_ID}\n"
         self.wfile.write(response.encode("utf-8"))
 
