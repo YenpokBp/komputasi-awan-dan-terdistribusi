@@ -29,9 +29,9 @@ def kirim_request():
                 body = resp.read().decode()
             # TODO 2: ekstrak instance_id dari `body` sesuai format response
             # yang kalian buat di app.py, lalu:
-                instance_id = body.strip()
-                with lock:
-                    hasil[instance_id] += 1
+            instance_id = body.split(":")[-1].strip()
+            with lock:
+                hasil[instance_id] += 1
     except Exception as e:
         with lock:
             hasil["ERROR"] += 1
