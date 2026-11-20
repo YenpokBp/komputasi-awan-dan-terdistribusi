@@ -66,7 +66,7 @@ Risiko 2: Inkonsistensi Status Kependudukan Akibat Keterlambatan Sinkronisasi Da
 4. Bandingkan singkat dengan **satu alternatif yang kalian tolak** — kenapa alternatif itu kurang tepat (mis. kenapa Public Cloud murni ditolak, atau kenapa Private Cloud murni dianggap kurang skalabel).
 **Alternatif yang ditolak: Public Cloud murni.** Alasan utamanya adalah bahwa model ini bertentangan langsung dengan syarat studi kasus, yaitu data tidak boleh berada di infrastruktur yang tidak sepenuhnya dikendalikan negara.
 
-Alasan Penolakan
+Alasan Penolakan [Yustinus Yendy]
 
 **1. Kedaulatan dan kontrol data tidak terjamin.**
 Pada Public Cloud, infrastruktur dimiliki dan dioperasikan penyedia pihak ketiga, dengan *resource pooling* yang berbagi perangkat keras dengan banyak pelanggan lain (*multi-tenant*). Untuk data NIK, alamat, dan biometrik yang sangat rahasia, pemerintah tidak punya kendali penuh atas lokasi fisik data, siapa yang punya akses administratif ke server, maupun hukum negara mana yang dapat menjangkau data tersebut. Ini sulit dipenuhi dengan kewajiban pelindungan data pribadi dalam UU PDP.
