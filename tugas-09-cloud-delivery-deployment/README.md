@@ -54,6 +54,7 @@ Risiko 1: Kebocoran Data Biometrik pada Proses Verifikasi Identitas
   - Menggunakan enkripsi dan Mutual TLS (mTLS) untuk komunikasi antarkomponen.
   - Tidak menyimpan data biometrik mentah di Public Cloud.
   - Membatasi akses dan menghapus data sementara setelah proses verifikasi selesai.
+
 Risiko 2: Inkonsistensi Status Kependudukan Akibat Keterlambatan Sinkronisasi Data
 - Skenario risiko: Ketika terjadi perubahan data penduduk di Private Cloud, seperti pencatatan kematian atau perubahan domisili, informasi yang tersimpan sementara pada layanan pendukung Public Cloud berpotensi belum diperbarui. Akibatnya, informasi lama dapat digunakan dalam proses verifikasi.
 - Strategi mitigasi:
