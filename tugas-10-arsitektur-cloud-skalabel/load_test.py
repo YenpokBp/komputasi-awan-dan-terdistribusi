@@ -16,6 +16,7 @@ TOTAL_REQUESTS = 300
 CONCURRENCY = 30
 
 hasil = Counter()
+latencies = []
 lock = threading.Lock()
 semaphore = threading.Semaphore(CONCURRENCY)
 
@@ -25,13 +26,17 @@ def kirim_request():
     # TODO 1: lakukan GET request ke TARGET_URL, baca body response
     # (yang berisi INSTANCE_ID dari app/app.py), lalu update `hasil`
     # (Counter) dengan lock supaya thread-safe.
+            waktu_mulai = time.perf_counter()
             with urllib.request.urlopen(TARGET_URL, timeout=5) as resp:
                 body = resp.read().decode()
+            waktu_selesai = time.perf_counter()
+            latensi = waktu_selesai - waktu_mulai
             # TODO 2: ekstrak instance_id dari `body` sesuai format response
             # yang kalian buat di app.py, lalu:
             instance_id = body.split(":")[-1].strip()
             with lock:
                 hasil[instance_id] += 1
+                latencies.append(latensi)
     except Exception as e:
         with lock:
             hasil["ERROR"] += 1
@@ -51,6 +56,16 @@ def main():
 
     for t in threads:
         t.join()
+    total_hasil = sum(hasil.values())
+
+    print("\nValidasi Request:")
+    print(f"Total request dikirim : {TOTAL_REQUESTS}")
+    print(f"Total hasil tercatat  : {total_hasil}")
+
+    if total_hasil == TOTAL_REQUESTS:
+        print("Status                : BERHASIL")
+    else:
+        print("Status                : TIDAK SESUAI")  
 
     durasi = time.time() - start
     print(f"\nSelesai dalam {durasi:.2f} detik")
