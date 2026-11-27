@@ -3,10 +3,14 @@ version: "3.8"
 services:
   app1:
     build: ./app
+    container_name: vertical-app
     environment:
       - INSTANCE_ID=app1
       - PORT=8000
-
+    ports:
+      - "8080:8000"
+    cpus: 2.0
+    mem_limit: 512m
   app2:
     build: ./app
     environment:
