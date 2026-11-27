@@ -88,13 +88,21 @@ Pengujian dilakukan dengan total 300 request dan concurrency 30.
 Pada Vertical Scaling, kapasitas CPU ditingkatkan dari 0,5 menjadi 2 CPU, sedangkan RAM tetap 512 MB.
 
 **Analisis Perbandingan**
+Berdasarkan hasil pengujian, horizontal scaling dengan 3 instance menghasilkan throughput sebesar 417,42 request/detik dan rata-rata latensi 0,0608 detik. Sementara itu, vertical scaling setelah peningkatan CPU menjadi 2 core menghasilkan throughput 379,06 request/detik dan rata-rata latensi 0,0671 detik.
 
-Berdasarkan hasil pengujian, tuliskan analisismu dengan membahas poin-poin berikut:
+Horizontal scaling lebih cocok untuk menghadapi lonjakan pengunjung TicketGo karena beban dapat dibagi ke beberapa instance. Selain itu, jika satu instance mengalami gangguan, instance lain masih dapat melayani permintaan. Vertical scaling juga meningkatkan kemampuan server, tetapi tetap bergantung pada satu instance sehingga berisiko menjadi titik kegagalan tunggal 
+### Keterbatasan Simulasi Dibandingkan Auto Scaling Cloud
 
-- Bandingkan latency dan throughput pada Horizontal Scaling 3 instance dengan Vertical Scaling 1 instance setelah peningkatan CPU.
-- Jelaskan kelebihan beberapa instance dalam membagi request dan mengurangi ketergantungan pada satu server.
-- Tentukan pendekatan yang menurut kelompok lebih tangguh untuk menghadapi *thundering herd* seperti kasus TicketGo.
-- Jelaskan alasan pilihan tersebut berdasarkan hasil pengujian dan kemungkinan gangguan pada salah satu instance.
+Pada simulasi ini, penambahan dan pengurangan instance masih dilakukan secara manual melalui Docker Compose dan konfigurasi Nginx. Berbeda dengan Auto Scaling pada AWS, jumlah instance dapat bertambah atau berkurang secara otomatis berdasarkan metrik seperti penggunaan CPU atau jumlah permintaan.
+
+Agar sistem dapat menerapkan auto-scaling, diperlukan beberapa komponen, yaitu pemantauan metrik (*metric collector*), pengatur penambahan dan pengurangan instance (*auto-scaler*), serta pemeriksaan kesehatan instance (*health check*). Dengan komponen tersebut, kapasitas sistem dapat menyesuaikan kebutuhan trafik secara otomatis.
+
+### Kesimpulan Kelompok
+
+Berdasarkan hasil pengujian, horizontal scaling dengan 3 instance memberikan throughput tertinggi dibandingkan skenario lainnya yang diuji. Horizontal scaling juga lebih sesuai untuk menghadapi lonjakan trafik TicketGo karena beban dapat dibagi ke beberapa instance dan layanan tidak hanya bergantung pada satu server.
+
+Namun, simulasi ini masih memiliki keterbatasan karena proses scaling dilakukan secara manual dan belum menggunakan mekanisme auto-scaling seperti pada layanan cloud. Oleh karena itu, pengembangan selanjutnya dapat menerapkan pemantauan metrik dan penambahan instance otomatis agar sistem lebih responsif terhadap perubahan jumlah pengguna.
+
 
 3. Jelaskan **keterbatasan simulasi ini** dibanding *auto-scaling* cloud sungguhan (mis. AWS Auto Scaling Group): di sini kalian menambah instance **manual**, sedangkan cloud asli menambah/mengurangi instance **otomatis berdasarkan metrik** (CPU, jumlah request) tanpa campur tangan manusia. Jelaskan komponen apa yang dibutuhkan agar proses manual kalian bisa jadi otomatis (mis. metric collector + auto-scaler + health check).
 Pada simulasi ini, penambahan jumlah instance dilakukan secara manual melalui konfigurasi Docker Compose dan Nginx. Artinya, pengguna harus menambahkan instance dan memperbarui konfigurasi ketika beban meningkat.
@@ -119,10 +127,7 @@ Dengan komponen tersebut, proses penambahan dan pengurangan instance dapat berja
 
 **Analisis Keterbatasan**
 
-Lengkapi analisismu dengan menjelaskan:
-- Mengapa penambahan instance secara manual kurang praktis ketika traffic berubah dengan cepat.
-- Apa keuntungan penambahan dan pengurangan instance secara otomatis.
-- Mengapa health check diperlukan ketika salah satu instance mengalami gangguan.
+Simulasi ini masih menggunakan penambahan instance secara manual. Agar otomatis seperti AWS Auto Scaling, diperlukan Metric Collector, Auto-Scaler, Health Check, dan Load Balancer untuk memantau trafik serta menambah atau mengurangi instance sesuai kebutuhan.
   
 ### Kesimpulan
 
