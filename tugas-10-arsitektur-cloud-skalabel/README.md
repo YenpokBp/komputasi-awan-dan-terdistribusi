@@ -32,8 +32,105 @@ Simulasikan (di laptop, memakai Docker Compose) sebuah arsitektur dengan **Load 
 ## Analisis yang Wajib Ditulis di `README.md`
 
 1. Bukti distribusi beban (angka request per instance) dari load test horizontal.
+Pengujian dilakukan menggunakan 300 request dengan concurrency 30 melalui Nginx Load Balancer.
+
+**Pengujian dengan 3 instance**
+
+| Instance | Jumlah Request |
+|---|---:|
+| app1 | 100 |
+| app2 | 100 |
+| app3 | 100 |
+| **Total** | **300** |
+
+Hasil pengujian:
+- Total request: 300
+- Concurrency: 30
+- Error: 0
+- Rata-rata latency: 0,0608 detik
+- Throughput: 417,42 request/detik
+
+**Pengujian dengan 4 instance**
+
+| Instance | Jumlah Request |
+|---|---:|
+| app1 | 75 |
+| app2 | 75 |
+| app3 | 75 |
+| app4 | 75 |
+| **Total** | **300** |
+
+Hasil pengujian:
+- Total request: 300
+- Concurrency: 30
+- Error: 0
+- Rata-rata latency: 0,0891 detik
+- Throughput: 311,25 request/detik
+
+Dari hasil tersebut, request berhasil dibagikan ke seluruh instance. Pada pengujian 3 instance, setiap instance menangani 100 request. Setelah ditambahkan menjadi 4 instance, setiap instance menangani 75 request.
 2. Perbandingan hasil **Horizontal Scaling (3-4 instance kecil)** vs **Vertical Scaling (1 instance besar)** — mana yang lebih tangguh untuk skenario *thundering herd* seperti TicketGo, dan kenapa.
+Pengujian dilakukan dengan total 300 request dan concurrency 30.
+
+**Hasil Horizontal Scaling**
+
+| Skenario | Jumlah Instance | Request per Instance | Rata-rata Latency | Throughput | Error |
+|---|---:|---|---:|---:|---:|
+| Horizontal 3 instance | 3 | 100, 100, 100 | 0,0608 detik | 417,42 req/detik | 0 |
+| Horizontal 4 instance | 4 | 75, 75, 75, 75 | 0,0891 detik | 311,25 req/detik | 0 |
+
+**Hasil Vertical Scaling**
+
+| Kondisi | Jumlah Instance | CPU | RAM | Rata-rata Latency | Throughput | Error |
+|---|---:|---:|---:|---:|---:|---:|
+| Sebelum peningkatan | 1 | 0,5 CPU | 512 MB | 2,3815 detik | 11,50 req/detik | 0 |
+| Setelah peningkatan | 1 | 2 CPU | 512 MB | 0,0671 detik | 379,06 req/detik | 0 |
+
+Pada Vertical Scaling, kapasitas CPU ditingkatkan dari 0,5 menjadi 2 CPU, sedangkan RAM tetap 512 MB.
+
+**Analisis Perbandingan**
+
+Berdasarkan hasil pengujian, tuliskan analisismu dengan membahas poin-poin berikut:
+
+- Bandingkan latency dan throughput pada Horizontal Scaling 3 instance dengan Vertical Scaling 1 instance setelah peningkatan CPU.
+- Jelaskan kelebihan beberapa instance dalam membagi request dan mengurangi ketergantungan pada satu server.
+- Tentukan pendekatan yang menurut kelompok lebih tangguh untuk menghadapi *thundering herd* seperti kasus TicketGo.
+- Jelaskan alasan pilihan tersebut berdasarkan hasil pengujian dan kemungkinan gangguan pada salah satu instance.
+
 3. Jelaskan **keterbatasan simulasi ini** dibanding *auto-scaling* cloud sungguhan (mis. AWS Auto Scaling Group): di sini kalian menambah instance **manual**, sedangkan cloud asli menambah/mengurangi instance **otomatis berdasarkan metrik** (CPU, jumlah request) tanpa campur tangan manusia. Jelaskan komponen apa yang dibutuhkan agar proses manual kalian bisa jadi otomatis (mis. metric collector + auto-scaler + health check).
+Pada simulasi ini, penambahan jumlah instance dilakukan secara manual melalui konfigurasi Docker Compose dan Nginx. Artinya, pengguna harus menambahkan instance dan memperbarui konfigurasi ketika beban meningkat.
+
+Pada layanan cloud sungguhan, seperti AWS Auto Scaling Group, jumlah instance dapat bertambah atau berkurang secara otomatis berdasarkan metrik tertentu, misalnya penggunaan CPU atau jumlah request.
+
+**Komponen yang Dibutuhkan untuk Auto-Scaling**
+
+1. **Metric Collector**  
+   Mengumpulkan metrik penggunaan resource, seperti CPU, memori, dan jumlah request.
+
+2. **Auto-Scaler**  
+   Mengambil keputusan untuk menambah atau mengurangi instance berdasarkan aturan dan ambang batas metrik.
+
+3. **Health Check**  
+   Memeriksa apakah instance berjalan dengan baik dan dapat menerima request.
+
+4. **Load Balancer**  
+   Membagikan request ke instance yang aktif dan sehat.
+
+Dengan komponen tersebut, proses penambahan dan pengurangan instance dapat berjalan otomatis tanpa harus dilakukan secara manual.
+
+**Analisis Keterbatasan**
+
+Lengkapi analisismu dengan menjelaskan:
+- Mengapa penambahan instance secara manual kurang praktis ketika traffic berubah dengan cepat.
+- Apa keuntungan penambahan dan pengurangan instance secara otomatis.
+- Mengapa health check diperlukan ketika salah satu instance mengalami gangguan.
+  
+### Kesimpulan
+
+Berdasarkan percobaan Horizontal Scaling dan Vertical Scaling, tuliskan kesimpulan kelompok mengenai:
+- Keberhasilan Nginx dalam membagikan request ke beberapa instance.
+- Perbedaan hasil pengujian Horizontal Scaling dan Vertical Scaling.
+- Pendekatan yang dianggap lebih sesuai untuk menghadapi lonjakan pengguna TicketGo.
+- Pentingnya auto-scaling untuk menjaga ketersediaan layanan ketika traffic berubah.
 
 ## Struktur Submission
 
