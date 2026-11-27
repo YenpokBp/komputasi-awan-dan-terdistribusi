@@ -1,16 +1,11 @@
 #!/bin/bash
-# Tugas 11 - Script Otomasi Perusahaan
-#
-# Pilih SATU skenario di bawah (atau buat versi kalian sendiri, jelaskan di README.md):
-#   1. Backup otomatis terjadwal
-#   2. Log rotation & cleanup
-#   3. Health check periodik
-#
-# Skeleton ini memberi kerangka umum. Isi TODO sesuai skenario pilihan kelompok.
+# Tugas 11 - Script Otomasi Perusahaan (Skenario: Backup Otomatis Terjadwal)
 
 set -euo pipefail
 
 LOG_FILE="/opt/provision/provision.log"
+SOURCE_DIR="/data/perusahaan_penting"
+BACKUP_DIR="/data/backup_harian"
 
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
@@ -18,33 +13,23 @@ log() {
 
 log "Provisioning dimulai - simulasi VM baru menyala"
 
-# TODO 1: implementasikan skenario otomasi yang kalian pilih di sini.
-# Contoh skenario Backup:
-#   SOURCE_DIR="/data/penting"
-#   BACKUP_DIR="/data/backup"
-#   mkdir -p "$SOURCE_DIR" "$BACKUP_DIR"
-#   cp -r "$SOURCE_DIR"/* "$BACKUP_DIR/backup-$(date +%Y%m%d-%H%M%S)/" 2>/dev/null || true
-#   log "Backup selesai ke $BACKUP_DIR"
-#
-# Contoh skenario Log Rotation:
-#   LOG_DIR="/var/log/aplikasi"
-#   find "$LOG_DIR" -type f -mtime +7 -exec rm {} \;
-#   log "Log lebih dari 7 hari dibersihkan"
-#
-# Contoh skenario Health Check:
-#   while true; do
-#     if ! curl -sf http://localhost:8000/health > /dev/null; then
-#       log "PERINGATAN: service tidak merespons!"
-#     else
-#       log "Service sehat"
-#     fi
-#     sleep 30
-#   done
+# 1. Membuat direktori sumber dan tujuan backup + file dummy perusahaan
+mkdir -p "$SOURCE_DIR" "$BACKUP_DIR"
+echo "Laporan Keuangan Q4 2026 - Rahasia" > "$SOURCE_DIR/laporan_keuangan.txt"
+echo "Database Pelanggan FoodGo" > "$SOURCE_DIR/db_pelanggan.sql"
+log "Direktori sumber ($SOURCE_DIR) dan file dummy berhasil dibuat."
 
-log "TODO: implementasikan skenario otomasi yang dipilih kelompok"
+# 2. Menyalakan service cron di dalam container
+service cron start
+log "Service cron berhasil dijalankan."
 
-log "Provisioning selesai"
+# 3. Menjadwalkan backup otomatis setiap 1 menit menggunakan rsync ke crontab
+# (Dalam produksi nyata biasanya diatur harian misal '0 2 * * *', di sini '*/1 * * * *' untuk simulasi)
+CRON_JOB="*/1 * * * * rsync -av --delete $SOURCE_DIR/ $BACKUP_DIR/backup-\$(date +\%Y\%m\%d-\%H\%M)/ >> $LOG_FILE 2>&1"
+(crontab -l 2>/dev/null || true; echo "$CRON_JOB") | crontab -
+log "Cron job backup otomatis berhasil didaftarkan."
 
-# Jaga container tetap hidup agar bisa diamati (hapus baris ini jika skenario
-# kalian memang dimaksudkan untuk exit setelah selesai, mis. one-shot backup).
+log "Provisioning selesai - VM siap beroperasi."
+
+# Jaga container tetap hidup agar cron berjalan di background dan bisa diamati
 tail -f /dev/null
